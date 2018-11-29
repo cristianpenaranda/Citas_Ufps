@@ -1,0 +1,41 @@
+<?php
+
+class UsuarioDAO{
+
+    //busca el Usuario en la bd
+    function buscarUsuarioDAO($usuario, $contraseña){
+        $conexion = Conexion::crearConexion();
+        $persona = false;
+        try {
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("select documento from usuario where documento=? and clave=?");
+            $stm->bindParam(1, $usuario, PDO::PARAM_STR);
+            $stm->bindParam(2, $contraseña, PDO::PARAM_STR);
+            $stm->execute();
+            $row = $stm->rowCount();
+            if ($row>0) {
+                $persona=true;
+            }
+        } catch (Exception $ex) {
+            throw new Exception("Error al buscar el Usuario en bd");
+        }
+        return $persona;
+    } 
+    
+    //registra usuario en la bd
+    function registroUsuarioDAO($documento, $contraseña){
+        $conexion = Conexion::crearConexion();
+        $exito = false;
+        try {
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("INSERT INTO  usuario(documento, clave) VALUES (?,?)");
+            $stm->bindParam(1, $documento, PDO::PARAM_STR);
+            $stm->bindParam(2, $contraseña, PDO::PARAM_STR);
+            $exito = $stm->execute();
+        } catch (Exception $ex) {
+            throw new Exception("Error al registrar usuario en bd");
+        }
+        return $exito;
+    }
+}
+

@@ -1,0 +1,251 @@
+/**ESTILOS GENERALES**/
+*{
+    margin: 0;
+    padding: 0;
+}
+
+h1,h4{
+    margin-top: 1%;
+    text-align: center;
+}
+
+hr{
+    border: 1px solid #f1c40f;
+}
+
+.panel{
+    border: 1px solid black;
+    box-shadow: 12px 12px 12px grey;
+    margin: 4%;
+}
+
+/*SIMBOLO DE CARGA*/
+#contenedor_carga{
+	background-color: white;
+	height: 100%;
+	width: 100%;
+	position: fixed;
+	-webkit-transition: all 1s ease;
+	-o-transition: all 1s ease;
+	transition: all 1s ease;
+	z-index: 10000;
+}
+
+#logo_carga{
+	width: 90px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+}
+
+#carga{
+	border: 10px solid white;
+	border-top-color: #aa1916;
+	border-top-style: groove;
+	height: 120px;
+	width: 120px;
+	border-radius: 100%; 
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+	-webkit-animation: girar 1.5s linear infinite;
+	-o-animation: girar 1.5s linear infinite;
+	animation: girar 1.5s linear infinite;
+}
+
+@keyframes girar{
+	from{transform: rotate(0deg);}
+	to{transform: rotate(360deg);}
+}
+
+/**FLECHA SUBIR VISTA**/
+.flechaSubir{
+    background: #A13729;
+    border: 1px solid white;
+    display: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    position: fixed;
+    z-index: 1;
+    bottom: 5%;
+    right: 5%;
+}
+
+.flechaSubir:hover{
+    background: #dd4b39;
+    border: 1px solid white;
+}
+
+/**VISTA LOGIN**/
+.img_fondo{
+    position: absolute;
+}
+.img_fondo img{
+    width: 100%;
+    height: 41em;
+}
+
+.login{
+	padding: 2%;
+	background: white;
+	display: block;
+	margin: 6% auto;
+	width: 90%;
+}
+
+.login p{
+	font-size: 15px;
+	text-align: center;
+}
+
+.login img{
+    width: 100%;
+}
+
+.login a{
+	color: grey;
+}
+
+.modal-header{
+    width: 100%;
+    text-align: center;
+}
+
+/**VISTA RECUPERAR CONTRASEÑA**/
+.modal .modal-header{
+    display: block;
+    margin: auto;
+}
+
+/**BOTONES**/
+.boton_principal{
+    background: #dd4b39;
+    color: white;
+    width: 70%;
+    display: block;
+    margin: auto;
+}
+
+.boton_principal:hover{
+    background: #A13729;
+}
+
+/**BARRA DE NAVEGACION**/
+.navbar{
+    background: #dd4b39;
+}
+
+.nav-link, .navbar-brand{
+    color: white;
+}
+
+.nav-link:hover, .navbar-brand:hover{
+    color: black;
+}
+
+.nav-item{
+    text-align: center;
+}
+
+nav img{
+    width: 3.5em;
+    margin-right: 2%;
+}
+
+nav #menu{
+    color: white;
+    font-size: 2em;
+}
+
+.opciones{
+    text-align: center;
+    color: black;
+    font-size: 15px;
+}
+
+.opciones:hover{
+    background: #A13729;
+    color: white;
+}
+
+/**VISTA ERROR**/
+#vista_error{
+    background: white;
+    border: 3px double black;
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+
+#vista_error img{
+    display: block;
+    margin: auto;
+    width: 45%;
+}
+
+/**FOOTER**/
+footer{
+    background: #dd4b39;
+    padding: 1%;
+}
+
+footer p{
+    text-align: center;
+    color: white;
+}
+
+footer img{
+    width: 30%;
+    margin-left: 10%;
+    margin-right: 9%;
+}
+
+footer img:hover{
+    filter: grayscale(100%);
+}
+
+/**VISTA INICIO**/
+#carouselExampleSlidesOnly{
+    background:white;
+    border-radius:15px 15px 15px 15px;
+    margin: 2%;
+}
+
+.carousel-item-inicio{
+    text-align: center;
+    padding: 2%;
+    background: white;
+    margin-top: 2%;
+    margin-left: 4%;
+    margin-right: 4%;
+    margin-bottom: 2%;
+    border-left: 7px solid #dd4b39;
+    border-right: 7px solid #dd4b39;
+    border-top: 7px solid #f1c40f;
+    border-bottom: 7px solid #dd4b39;
+}
+
+.carousel-item span{
+    font-size: 15px;
+    color: grey;
+}
+
+
+/**VISTA ADMINISTRADOR**/
+.tabla{
+    display: block;
+    width: 100%;
+    height: 300px;
+    overflow: scroll;
+    background:white;
+    color:black;
+    text-align:center;
+    border-radius:15px 15px 15px 15px;
+}
