@@ -7,6 +7,20 @@ class controladorAdministrador{
 	$this->negocioAdministrador = new negocio();
     }    
 
+    //MOSTRAR TOTALES EN PESTAÑA DE ADMIN
+    public function mostrarTotalDepControlador(){
+        return $this->negocioAdministrador->mostrarTotalDepNegocio();
+    } 
+    public function mostrarTotalFunControlador(){
+        return $this->negocioAdministrador->mostrarTotalFunNegocio();
+    } 
+    public function mostrarTotalNotControlador(){
+        return $this->negocioAdministrador->mostrarTotalNotNegocio();
+    } 
+    public function mostrarTotalUsuControlador(){
+        return $this->negocioAdministrador->mostrarTotalUsuNegocio();
+    } 
+
     //BUSCA EL ADMINISTRADOR PARA LOGUEAR
     public function buscarAdministradorControlador($usuario, $contraseña){
         return $this->negocioAdministrador->buscarAdministradorNegocio($usuario, $contraseña);
@@ -45,6 +59,11 @@ class controladorAdministrador{
     //LISTAR DEPENDENCIAS
     public function listarDependenciasControlador(){
         return $this->negocioAdministrador->listarDependenciasNegocio();
+    }
+
+    //LISTAR DEPENDENCIAS VISTA SOLICITUD
+    public function listarDependenciasSolicitudControlador(){
+        return $this->negocioAdministrador->listarDependenciasSolicitudNegocio();
     }
     
     //MOSTRAR INFORMACIÓN DE NOTICIA DE ADMINISTRADOR

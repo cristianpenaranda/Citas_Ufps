@@ -3,7 +3,7 @@
 class DependenciaDAO{
 
     //INGRESAR NUEVA DEPENDENCIA
-    function regiastroDependenciaDAO($DepDTO) {
+    static function regiastroDependenciaDAO($DepDTO) {
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
@@ -25,7 +25,7 @@ class DependenciaDAO{
     }
 
     //LISTAR DEPENDENCIAS
-    function listarDependenciaDAO() {
+    static function listarDependenciaDAO() {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -41,9 +41,27 @@ class DependenciaDAO{
         }
         return $pila;
     }
+
+    //LISTAR DEPENDENCIAS VISTA SOLICITUD
+    static function listarDependenciaSolicitudDAO() {
+        $conexion = Conexion::crearConexion();
+        try {
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT p.documento id,d.nombre,d.ubicacion,d.telefono,p.nombre funcionario FROM dependencia d LEFT JOIN persona p ON p.documento=d.funcionario");
+            $stm->execute();
+            $pila = array();
+            while ($consulta = $stm->fetch()) {
+                $depDTO = new DependenciaDTO($consulta['id'],$consulta['nombre'],$consulta['ubicacion'],$consulta['telefono'],$consulta['funcionario']);
+                array_push($pila, $depDTO);
+            }
+        } catch (Exception $ex) {
+            throw new Exception($ex->getTraceAsString());
+        }
+        return $pila;
+    }
     
     //BUSCA DATOS DE LAS DEPENDENCIAS
-    function mostrarInfoDependenciaDAO($idDep){
+    static function mostrarInfoDependenciaDAO($idDep){
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -58,7 +76,7 @@ class DependenciaDAO{
     } 
     
     //MODIFICAR DEPENDENCIA
-    function modificarDependenciaDAO($DepDTO){
+    static function modificarDependenciaDAO($DepDTO){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {           
@@ -73,6 +91,20 @@ class DependenciaDAO{
             $stm->bindParam(3, $telefono, PDO::PARAM_STR);
             $stm->bindParam(4, $id, PDO::PARAM_STR);
             $exito = $stm->execute();
+        } catch (Exception $ex) {
+            throw new Exception($ex->getTraceAsString());
+        }
+        return $exito;
+    }
+    
+    //TOTAL DEPENDENCIAS REGISTRADAS
+    static function mostrarTotalDepDAO(){
+        $conexion = Conexion::crearConexion();
+        try {           
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT COUNT(id) cantidad FROM dependencia");
+            $stm->execute();
+            $exito = $stm->fetch();
         } catch (Exception $ex) {
             throw new Exception($ex->getTraceAsString());
         }

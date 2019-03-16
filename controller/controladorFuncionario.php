@@ -22,4 +22,19 @@ class controladorFuncionario{
         return $this->negocioFuncionario->listarNoticiasFunNegocio($idFun);
     }
 
+    //LISTAR HORARIOS
+    public function listarHorarioControlador($id){
+        return $this->negocioFuncionario->listarHorarioNegocio($id);
+    }
+
+    //REGISTRO DE HORARIO
+    public function registroHorarioControlador($horarioDTO){
+        return $this->negocioFuncionario->registroHorarioNegocio($horarioDTO);
+    }
+
+    //CAMBIAR ESTADO DE LA CITA
+    public function cambiarEstadoCitaControlador($cita){
+        return $this->negocioFuncionario->cambiarEstadoCitaNegocio($cita);
+    }
+
 }

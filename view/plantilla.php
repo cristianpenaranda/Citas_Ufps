@@ -42,5 +42,6 @@
     <script type="text/javascript" src="view/presentacion/js/login.js"></script>
     <script type="text/javascript" src="view/presentacion/js/administrador.js"></script>
     <script type="text/javascript" src="view/presentacion/js/funcionario.js"></script>
+    <script type="text/javascript" src="view/presentacion/js/usuario.js"></script>
 </body>
 </html>

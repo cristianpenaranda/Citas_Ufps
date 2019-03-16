@@ -3,7 +3,7 @@
 class FuncionarioDAO{
 
     //BUSCA EL FUNCIONARIO DE LA BD
-    function buscarFuncionarioDAO($usuario, $contraseña){
+    static function buscarFuncionarioDAO($usuario, $contraseña){
         $conexion = Conexion::crearConexion();
         $persona = false;
         try {
@@ -23,7 +23,7 @@ class FuncionarioDAO{
     }
     
     //REGISTRA EL FUNCIONARIO EN LA BD  
-    function registroFuncionarioDAO($documento, $contraseña){
+    static function registroFuncionarioDAO($documento, $contraseña){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
@@ -39,7 +39,7 @@ class FuncionarioDAO{
     }
     
     //LISTAR FUNCIONARIOS PARA EL REGISTRO UNA DEPENDENCIA
-    function listarFuncionariosRegistroDAO(){
+    static function listarFuncionariosRegistroDAO(){
         $conexion = Conexion::crearConexion();
         try {
             $fun = "";
@@ -58,7 +58,7 @@ class FuncionarioDAO{
     }
     
     //LISTAR FUNCIONARIOS
-    function listarFuncionariosDAO(){
+    static function listarFuncionariosDAO(){
         $conexion = Conexion::crearConexion();
         try {
             $fun = "";
@@ -77,7 +77,7 @@ class FuncionarioDAO{
     }
     
     //BUSCA DATOS DEL FUNCIONARIO
-    function mostrarInfoFuncionarioDAO($idFuncionario){
+    static function mostrarInfoFuncionarioDAO($idFuncionario){
         $conexion = Conexion::crearConexion();
         $noticia = false;
         try {
@@ -93,7 +93,7 @@ class FuncionarioDAO{
     }   
     
     //MODIFICAR FUNCIONARIO 
-    function modificarFuncionarioDAO($personaDTO){
+    static function modificarFuncionarioDAO($personaDTO){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {           
@@ -105,6 +105,21 @@ class FuncionarioDAO{
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception("Error al modificar el funcionario");
+        }
+        return $exito;
+    }
+       
+    
+    //TOTAL FUNCIONARIOS REGISTRADOS
+    static function mostrarTotalFunDAO(){
+        $conexion = Conexion::crearConexion();
+        try {           
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT COUNT(documento) cantidad FROM funcionario");
+            $stm->execute();
+            $exito = $stm->fetch();
+        } catch (Exception $ex) {
+            throw new Exception($ex->getTraceAsString());
         }
         return $exito;
     }

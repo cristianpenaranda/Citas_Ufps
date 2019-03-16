@@ -9,7 +9,7 @@
             <h5>Con frecuencia es debido algún error<br>
                 al escribir la dirección de la página (URL).</h5>
             <br>
-            <a type="submit" href="/citas_ufps/Login" class="btn btn-danger">Ir a Inicio</a>
+            <a type="submit" href="login" class="btn btn-danger">Ir a Inicio</a>
             <br><br>
         </div>
     </div>

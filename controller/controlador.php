@@ -17,7 +17,7 @@ class controlador{
 	if($enlace){
         	$enlace = $this->negocio->generarEnlace($enlace);
 	}else {
-		$enlace = $this->negocio->generarEnlace("Login");
+		$enlace = $this->negocio->generarEnlace("login");
 	}
       	include_once $enlace;
     }

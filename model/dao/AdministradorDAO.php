@@ -3,7 +3,7 @@
 class AdministradorDAO{
 
     //busca el administrador en la bd
-    function buscarAdministradorDAO($usuario, $contraseña){
+    static function buscarAdministradorDAO($usuario, $contraseña){
         $conexion = Conexion::crearConexion();
         $persona = false;
         try {
@@ -23,7 +23,7 @@ class AdministradorDAO{
     }
     
     //busca usuario de administrador
-    function buscarUsuarioAdministradorDAO(){
+    static function buscarUsuarioAdministradorDAO(){
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

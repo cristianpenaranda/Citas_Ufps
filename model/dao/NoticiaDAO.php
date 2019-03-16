@@ -3,7 +3,7 @@
 class NoticiaDAO {
 
     //INGRESAR NUEVA NOTICIA ADMINISTRADOR
-    function ingresarNuevaNoticiaDAO($noticiaDTO) {
+    static function ingresarNuevaNoticiaDAO($noticiaDTO) {
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
@@ -35,7 +35,7 @@ class NoticiaDAO {
     }
 
     //LISTAR NOTICIAS EN INICIO
-    function listarNoticiasInicioDAO() {
+    static function listarNoticiasInicioDAO() {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -53,7 +53,7 @@ class NoticiaDAO {
     }
 
     //LISTAR NOTICIAS DE ADMINISTRADOR
-    function listarNoticiasAdminDAO() {
+    static function listarNoticiasAdminDAO() {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -71,7 +71,7 @@ class NoticiaDAO {
     }
 
     //LISTAR NOTICIAS DE FUNCIONARIO
-    function listarNoticiasFunDAO($idFun) {
+    static function listarNoticiasFunDAO($idFun) {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -90,7 +90,7 @@ class NoticiaDAO {
     }
     
     //BUSCA DATOS DE NOTICIA
-    function mostrarInfoNoticiaDAO($idNoticia){
+    static function mostrarInfoNoticiaDAO($idNoticia){
         $conexion = Conexion::crearConexion();
         $noticia = false;
         try {
@@ -106,7 +106,7 @@ class NoticiaDAO {
     }    
     
     //ELIMINAR NOTICIA
-    function eliminarNoticiaDAO($idNoticia){
+    static function eliminarNoticiaDAO($idNoticia){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {           
@@ -121,7 +121,7 @@ class NoticiaDAO {
     }
     
     //MODIFICAR NOTICIA
-    function modificarNoticiaDAO($noticiaDTO){
+    static function modificarNoticiaDAO($noticiaDTO){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {           
@@ -136,6 +136,20 @@ class NoticiaDAO {
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception("Error al modificar la noticia");
+        }
+        return $exito;
+    }
+    
+    //TOTAL NOTICIAS REGISTRADAS
+    static function mostrarTotalNotDAO(){
+        $conexion = Conexion::crearConexion();
+        try {           
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT COUNT(id) cantidad FROM noticia");
+            $stm->execute();
+            $exito = $stm->fetch();
+        } catch (Exception $ex) {
+            throw new Exception($ex->getTraceAsString());
         }
         return $exito;
     }

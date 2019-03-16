@@ -10,22 +10,22 @@ class negocio{
 	//GENERA ENLACE DE LA BARRA DE NAVEGACION
 	public function generarEnlace($enlace){
         if($this->validarPestañas($enlace)){
-           return "view/modulos/pestañas/".$enlace.".php";
+           return "view/modulos/pestanas/".$enlace.".php";
        }else if($this->validarPestañasAdmin($enlace)){
-           return "view/modulos/pestañas/pestañasAdmin/".$enlace.".php";
+           return "view/modulos/pestanas/pestanasAdmin/".$enlace.".php";
        }else if($this->validarPestañasFun($enlace)){
-           return "view/modulos/pestañas/pestañasFun/".$enlace.".php";
+           return "view/modulos/pestanas/pestanasFun/".$enlace.".php";
        }else if($this->validarPestañasUser($enlace)){
-           return "view/modulos/pestañas/pestañasUser/".$enlace.".php";
+           return "view/modulos/pestanas/pestanasUser/".$enlace.".php";
        }else{
-           return "view/modulos/pestañas/errorpage.php";
+           return "view/modulos/pestanas/errorpage.php";
        }
    }
 
     //OBTIENE A PESTAÑA DEL MENU DE ADIMINISTRADOR
     private function validarPestañasAdmin($pestaña){
       $exito=false;
-      $pestañas=array("Administrador_Noticias","Administrador_Dependencias","Administrador_Funcionarios");
+      $pestañas=array("administrador_noticias","administrador_dependencias","administrador_funcionarios");
       if(in_array($pestaña, $pestañas)){
            $exito=true;
        }
@@ -35,7 +35,7 @@ class negocio{
     //OBTIENE A PESTAÑA DEL MENU DE FUNCIONARIO
     private function validarPestañasFun($pestaña){
       $exito=false;
-      $pestañas=array("Funcionario_Noticias","Funcionario_Horarios");
+      $pestañas=array("funcionario_noticias","funcionario_horarios");
       if(in_array($pestaña, $pestañas)){
            $exito=true;
         }
@@ -45,7 +45,7 @@ class negocio{
     //OBTIENE A PESTAÑA DEL MENU DE USUARIO
     private function validarPestañasUser($pestaña){
       $exito=false;
-      $pestañas=array();
+      $pestañas=array("usuario_solicitud","mis_citas");
       if(in_array($pestaña, $pestañas)){
            $exito=true;
         }
@@ -55,7 +55,7 @@ class negocio{
 	//OBTIENE A PESTAÑA DEL MENU
     private function validarPestañas($pestaña){
         $exito=false;
-        $pestañas=array("Login","Inicio","ErrorPage","Perfil","Salir");
+        $pestañas=array("login","inicio","errorpage","perfil","salir");
         if(in_array($pestaña, $pestañas)){
             $exito=true;
         }
@@ -70,6 +70,19 @@ class negocio{
     
     
     //////////////////ADMINISTRADOR//////////////////////////
+    //MOSTRAR TOTALES EN PESTAÑA ADMIN
+    public function mostrarTotalDepNegocio(){
+        return DependenciaDAO::mostrarTotalDepDAO();
+    }    
+    public function mostrarTotalFunNegocio(){
+        return FuncionarioDAO::mostrarTotalFunDAO();
+    }    
+    public function mostrarTotalNotNegocio(){
+        return NoticiaDAO::mostrarTotalNotDAO();
+    }    
+    public function mostrarTotalUsuNegocio(){
+        return UsuarioDAO::mostrarTotalUsuDAO();
+    }    
     //BUSCA ADMINISTRADOR PARA LOGUEAR
     public function buscarAdministradorNegocio($usuario, $contraseña){
         return AdministradorDAO::buscarAdministradorDAO($usuario, $contraseña);
@@ -101,6 +114,10 @@ class negocio{
     //LISTAR DEPENDENCIAS 
     public function listarDependenciasNegocio(){
         return DependenciaDAO::listarDependenciaDAO();
+    }          
+    //LISTAR DEPENDENCIAS VISTA SOLICITUD
+    public function listarDependenciasSolicitudNegocio(){
+        return DependenciaDAO::listarDependenciaSolicitudDAO();
     }       
     //MOSTRAR INFORMACION NOTICIA ADMINISTRADOR
     public function mostrarInfoNoticiaNegocio($idNoticia){
@@ -145,7 +162,47 @@ class negocio{
     //REGISTRAR USUARIO
     public function registroUsuarioNegocio($usuario, $contraseña){
         return UsuarioDAO::registroUsuarioDAO($usuario, $contraseña);
-    } 
+    }  
+
+    //LISTAR HORARIOS DE UNA DEPENDENCIA
+    public function listarHorarioSolicitudNegocio($fecha, $dep){
+        return HorarioDAO::listarHorarioSolicitudDAO($fecha, $dep);
+    }  
+
+     //VALIDAR CANTIDAD DE CITAS PARA UN HORARIO
+    public function validarCantidadCitasNegocio($fecha, $inicio){
+        return HorarioDAO::validarCantidadCitasDAO($fecha, $inicio);
+    }  
+
+     //CONSULTAR TURNO
+    public function consultarTurnoNegocio($idHorario, $usuario, $fun){
+        return CitaDAO::consultarTurnoDAO($idHorario, $usuario, $fun);
+    }  
+
+     //CONSULTAR TURNO ACTUAL
+    public function consultarTurnoActualNegocio($idHorario, $fun){
+        return CitaDAO::consultarTurnoActualDAO($idHorario, $fun);
+    }  
+
+     //INGRESAR CITA
+    public function ingresarCitaNegocio($citaDTO){
+        return CitaDAO::ingresarCitaDAO($citaDTO);
+    }  
+
+    //LISTAR CITAS DE UN USUARIO 
+    public function listarCitasUsuarioNegocio($idUsuario){
+        return CitaDAO::listarCitasUsuarioDAO($idUsuario);
+    }  
+
+    //LISTAR CITAS POR ATENDER 
+    public function listarCitasPorAtenderNegocio($fecha, $fun){
+        return CitaDAO::listarCitasPorAtenderDAO($fecha, $fun);
+    }  
+
+    //CANCLEAR CITA
+    public function cancelarCitaNegocio($idCita){
+        return CitaDAO::cancelarCitaDAO($idCita);
+    }  
     
     
     //////////////////FUNCIONARIO//////////////////////////
@@ -156,6 +213,18 @@ class negocio{
     //LISTAR NOTICIAS DE FUNCIONARIO
     public function listarNoticiasFunNegocio($idFun){
         return NoticiaDAO::listarNoticiasFunDAO($idFun);
+    }        
+    //LISTAR HORARIOS
+    public function listarHorarioNegocio($id){
+        return HorarioDAO::listarHorarioDAO($id);
+    }    
+    //REGISTRO DE HORARIO
+    public function registroHorarioNegocio($horarioDTO){
+        return HorarioDAO::registroHorarioDAO($horarioDTO);
+    }    
+    //CAMBIAR ESTADO DE LA CITA
+    public function cambiarEstadoCitaNegocio($cita){
+        return CitaDAO::cambiarEstadoCitaDAO($cita);
     }    
     
     
@@ -175,5 +244,5 @@ class negocio{
     //MODIFICAR PERSONA
     public function modificarPersonaNegocio($personaDTO){
         return PersonaDAO::modificarPersonaDAO($personaDTO);
-    }  
+    }   
 }

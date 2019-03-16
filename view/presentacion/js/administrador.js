@@ -13,7 +13,26 @@ $(document).ready(function () {
                 console.log(estado);
                 console.log(error);
                 console.log(jqXHR);
+            }
+        });
+    }
+    
+    //CARGAR TOTALES EN PESTAÑA INICIO
+    if ($('#totalesAdmin').is(':visible')) {
+        $.ajax({
+            url: 'view/modulos/ajax.php?mostrarTotales=true',
+            dataType: 'text',
+            success: function (respuesta) {
+                document.getElementById("totalDep").innerHTML = respuesta.split('ª')[0];
+                document.getElementById("totalFun").innerHTML = respuesta.split('ª')[1];
+                document.getElementById("totalNot").innerHTML = respuesta.split('ª')[2];
+                document.getElementById("totalUsu").innerHTML = respuesta.split('ª')[3];
             },
+            error: function (jqXHR, estado, error) {
+                console.log(estado);
+                console.log(error);
+                console.log(jqXHR);
+            }
         });
     }
 
@@ -80,6 +99,22 @@ $(document).ready(function () {
             url: 'view/modulos/ajax.php?listarNoticiasAdmin=true',
             dataType: 'text',
             success: function (respuesta) {
+                
+                if (respuesta === "false") {
+                    $('#mensajeNoticiasAdm').html("<h4>Listado de Noticias</h4><hr><label style='color:red;'>No tiene noticias registradas</label>");
+                } else {
+                    $('#mensajeNoticiasAdm').html("<h4>Listado de Noticias</h4><hr><table class='tabla table table-sm'>"+
+                                                        "<thead>"+
+                                                            "<tr>"+
+                                                                "<th scope='col' style='width: 5%;'>#</th>"+
+                                                                "<th scope='col' style='width: 30%;'>Fecha</th>"+
+                                                                "<th scope='col' style='width: 50%;'>Titulo</th>"+
+                                                                "<th scope='col' style='width: 10%;'>Opciones</th>"+
+                                                            "</tr>"+
+                                                        "</thead>"+
+                                                        "<tbody id='tablaNoticiasAdmin'>"+
+                                                        "</tbody>"+
+                                                    "</table> ");
                 document.getElementById("tablaNoticiasAdmin").innerHTML = respuesta;
                 //VER INFORMACION DE LA NOTICIA DEL ADMINISTRADOR
                 $(".verNoticiaAdmin").bind("click", function () {
@@ -193,6 +228,7 @@ $(document).ready(function () {
                                 }
                             });
                 });
+            }
             },
             error: function (jqXHR, estado, error) {
                 console.log(estado);
@@ -264,7 +300,7 @@ $(document).ready(function () {
                             $("#registroNombreFuncionario").val("");
                             $("#registroTelefonoFuncionario").val("");
                             $("#registroCorreoFuncionario").val("");
-                            $("#registroContraseñaFuncionario").val("");
+                            $("#registroClaveFuncionario").val("");
                             listarFuncionarios();
                         } else {
                             respuestaError("ERROR", respuesta["error"]);
@@ -507,8 +543,6 @@ $(document).ready(function () {
                                         ubicacionDepModificar: $('#ModalUbicacionDep').val(),
                                         telefonoDepModificar: $('#ModalTelefonoDep').val()
                                     };
-                                    alert(datos['idDepModificar']+datos['nombreDepModificar']+datos['ubicacionDepModificar']+
-                                            datos['telefonoDepModificar']);
                                     $.ajax({
                                         url: 'view/modulos/ajax.php',
                                         method: 'post',

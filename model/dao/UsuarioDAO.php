@@ -3,7 +3,7 @@
 class UsuarioDAO{
 
     //busca el Usuario en la bd
-    function buscarUsuarioDAO($usuario, $contraseña){
+    static function buscarUsuarioDAO($usuario, $contraseña){
         $conexion = Conexion::crearConexion();
         $persona = false;
         try {
@@ -23,7 +23,7 @@ class UsuarioDAO{
     } 
     
     //registra usuario en la bd
-    function registroUsuarioDAO($documento, $contraseña){
+    static function registroUsuarioDAO($documento, $contraseña){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
@@ -34,6 +34,22 @@ class UsuarioDAO{
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception("Error al registrar usuario en bd");
+        }
+        return $exito;
+    }
+    
+    
+    
+    //TOTAL USUARIOS REGISTRADOS
+    static function mostrarTotalUsuDAO(){
+        $conexion = Conexion::crearConexion();
+        try {           
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT COUNT(documento) cantidad FROM usuario");
+            $stm->execute();
+            $exito = $stm->fetch();
+        } catch (Exception $ex) {
+            throw new Exception($ex->getTraceAsString());
         }
         return $exito;
     }

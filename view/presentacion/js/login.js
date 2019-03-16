@@ -64,7 +64,7 @@ $(document).ready(function(){
 	    			registroDocumento: {required: true, number: true},
 	    			registroNombre: {required: true},
 	    			registroTelefono: {required: true, number: true},
-	    			registroCorreo: {required: true},
+	    			registroCorreo: {required: true, email: true},
 	    			registroClave: {required: true}
 	    		},
 	    		messages:

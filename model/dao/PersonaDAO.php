@@ -3,7 +3,7 @@
 class PersonaDAO{    
 
     //busca datos de persona en la bd
-    function buscarDatosPersonaDAO($usuario){
+    static function buscarDatosPersonaDAO($usuario){
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -18,7 +18,7 @@ class PersonaDAO{
     }
     
     //busca persona en la bd
-    function buscarPersonaDAO($usuario){
+    static function buscarPersonaDAO($usuario){
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -33,7 +33,7 @@ class PersonaDAO{
     }
     
     //registra persona en la bd
-    function registroPersonaDAO($personaDTO){
+    static function registroPersonaDAO($personaDTO){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
@@ -56,7 +56,7 @@ class PersonaDAO{
     }
     
     //MODIFICAR PERSONA 
-    function modificarPersonaDAO($personaDTO){
+    static function modificarPersonaDAO($personaDTO){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {           

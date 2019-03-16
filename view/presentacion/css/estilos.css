@@ -84,12 +84,11 @@ hr{
 }
 
 /**VISTA LOGIN**/
-.img_fondo{
-    position: absolute;
-}
-.img_fondo img{
+#vista_login{
+    background: url("../img/fondo.jpg") no-repeat fixed center center; 
+    background-size:cover;
     width: 100%;
-    height: 41em;
+    height: 41.5em;
 }
 
 .login{
@@ -238,6 +237,7 @@ footer img:hover{
 }
 
 
+
 /**VISTA ADMINISTRADOR**/
 .tabla{
     display: block;
@@ -248,4 +248,16 @@ footer img:hover{
     color:black;
     text-align:center;
     border-radius:15px 15px 15px 15px;
+}
+
+.imagenCarrusel{
+    width: 100%;
+   height:500px;
+}
+
+@media screen and (max-width: 992px) {
+  .imagenCarrusel{
+    width: 100%;
+    height:200px;
+}
 }
