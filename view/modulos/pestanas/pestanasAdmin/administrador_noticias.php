@@ -16,7 +16,7 @@ if (isset($_SESSION["Tipo"])) {
             <h4>Nueva Noticia</h4>
             <hr>
                 <div style="background:white;border-radius:15px 15px 15px 15px;">
-                <form class="login" id="FormNoticiaAdmin" method="POST">
+                <form class="login" id="FormNoticiaAdmin" method="POST" autocomplete="off">
                     <div class="col-auto">
 
                         <div class="form-group input-group mt-3">
@@ -51,7 +51,7 @@ if (isset($_SESSION["Tipo"])) {
 <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="VerInfoNoticiaAdmin">
     <div class="modal-dialog">
         <div class="modal-content" style="padding: 5%;">
-            <form id="FormInfoCliente" method="POST">
+            <form id="FormInfoCliente" method="POST" autocomplete="off">
                 <h4 style="text-align: center;">Información</h4>
                 <hr>
                 <div class="form-group">

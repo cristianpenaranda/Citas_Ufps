@@ -6,14 +6,12 @@ class DependenciaDTO{
     private $nombre;
     private $ubicacion;
     private $telefono;
-    private $funcionario;
     
-    function __construct($id, $nombre, $ubicacion, $telefono, $funcionario) {
+    function __construct($id, $nombre, $ubicacion, $telefono) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->ubicacion = $ubicacion;
         $this->telefono = $telefono;
-        $this->funcionario = $funcionario;
     }
 
     function getId() {
@@ -32,10 +30,6 @@ class DependenciaDTO{
         return $this->telefono;
     }
 
-    function getFuncionario() {
-        return $this->funcionario;
-    }
-
     function setId($id) {
         $this->id = $id;
     }
@@ -50,10 +44,6 @@ class DependenciaDTO{
 
     function setTelefono($telefono) {
         $this->telefono = $telefono;
-    }
-
-    function setFuncionario($funcionario) {
-        $this->funcionario = $funcionario;
     }
     
 }

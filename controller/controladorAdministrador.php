@@ -20,6 +20,9 @@ class controladorAdministrador{
     public function mostrarTotalUsuControlador(){
         return $this->negocioAdministrador->mostrarTotalUsuNegocio();
     } 
+    public function mostrarTotalImaControlador(){
+        return $this->negocioAdministrador->mostrarTotalImaNegocio();
+    } 
 
     //BUSCA EL ADMINISTRADOR PARA LOGUEAR
     public function buscarAdministradorControlador($usuario, $contraseña){
@@ -41,9 +44,14 @@ class controladorAdministrador{
         return $this->negocioAdministrador->registroDependenciaNegocio($depDTO);
     }
 
-    //LISTAR FUNCIONARIOS PARA EL REGISTRO UNA DEPENDENCIA
-    public function listarFuncionariosRegistroControlador(){
-        return $this->negocioAdministrador->listarFuncionariosRegistroNegocio();
+    //LISTAR DEPENDECIAS PARA EL REGISTRO UN FUNCIONARIO
+    public function listarDependenciasRegistroControlador(){
+        return $this->negocioAdministrador->listarDependenciasRegistroNegocio();
+    }
+
+    //LISTAR IMAGENES DEL CARRUSEL
+    public function listarImagenesControlador(){
+        return $this->negocioAdministrador->listarImagenesNegocio();
     }
 
     //LISTAR FUNCIONARIOS 
@@ -71,6 +79,11 @@ class controladorAdministrador{
         return $this->negocioAdministrador->mostrarInfoNoticiaNegocio($idNoticia);
     }
     
+    //MOSTRAR IMAGEN LISTADO
+    public function mostrarImagenListadoControlador($img){
+        return $this->negocioAdministrador->mostrarImagenListadoNegocio($img);
+    }
+    
     //MOSTRAR INFORMACIÓN DEL FUNCIONARIO
     public function mostrarInfoFuncionarioControlador($idFuncionario){
         return $this->negocioAdministrador->mostrarInfoFuncionarioNegocio($idFuncionario);
@@ -84,6 +97,11 @@ class controladorAdministrador{
     //ELIMINAR NOTICIA DE ADMINISTRADOR
     public function eliminarNoticiaControlador($idNoticia){
         return $this->negocioAdministrador->eliminarNoticiaNegocio($idNoticia);
+    }
+    
+    //ELIMINAR IMAGEN
+    public function eliminarImagenControlador($img){
+        return $this->negocioAdministrador->eliminarImagenNegocio($img);
     }
     
     //MODIFICAR NOTICIA DE ADMINISTRADOR
@@ -102,7 +120,7 @@ class controladorAdministrador{
     }
         
     //REGISTRA EL FUNCIONARIO
-    public function registroFuncionarioControlador($usuario, $contraseña){
-        return $this->negocioAdministrador->registroFuncionarioNegocio($usuario, $contraseña);
+    public function registroFuncionarioControlador($usuario,$dep){
+        return $this->negocioAdministrador->registroFuncionarioNegocio($usuario,$dep);
     }
 }

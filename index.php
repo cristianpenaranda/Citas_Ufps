@@ -8,6 +8,7 @@ require_once './controller/controladorUsuario.php';
 
 require_once './model/negocio.php';
 require_once './model/conexion.php';
+require_once './model/mail/Mail.php';
 
 require_once './model/dao/PersonaDAO.php';
 require_once './model/dao/AdministradorDAO.php';

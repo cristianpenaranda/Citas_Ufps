@@ -1,7 +1,7 @@
 <?php
 if (isset($_SESSION["Tipo"])) {
     $user = unserialize($_SESSION['Tipo']);
-    if ($user != "Usuario") {
+    if ($user == "Administrador") {
         header("Location:errorpage");
     }
 } else {
@@ -30,7 +30,7 @@ if (isset($_SESSION["Tipo"])) {
                 </div>
                 <br>        
                 <!-- TABLA INICIA -->
-                <table id="tablaSolicitud" class="col-md-10 tabla table table-striped" style="width: 100%;">
+                <table id="tablaSolicitud" class="col-md-10 tabla table table-responsive-md" style="width: 100%;">
                     <thead>
                         <tr>
                             <th style="width:20%;">Nombre</th>
@@ -58,13 +58,6 @@ if (isset($_SESSION["Tipo"])) {
                 <form id="FormSolicitudModal" method="POST">
                     <h4 style="text-align: center;">Horarios Disponibles</h4>
                     <hr>
-                    <div class="form-group input-group mt-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1"><ion-icon name="calendar"></ion-icon></span>
-                        </div>
-                        <input id="dateSolicitud" name="dateSolicitud" type="date" style="width: 70%;" required>
-                        <button class="btn btn-primary" title="Buscar Horarios" id="botonBuscarHorarios"><ion-icon name="search"></ion-icon></button>
-                    </div>
                     <label id="MensajeErrorHorario"></label>
                     <div id="horariosOcultos" style="display: none;">
                         

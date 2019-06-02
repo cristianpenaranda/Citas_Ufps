@@ -6,12 +6,14 @@ class PersonaDTO{
     private $nombre;
     private $telefono;
     private $correo;
+    private $clave;
     
-    function __construct($documento, $nombre, $telefono, $correo) {
+    function __construct($documento, $nombre, $telefono, $correo, $clave) {
         $this->documento = $documento;
         $this->nombre = $nombre;
         $this->telefono = $telefono;
         $this->correo = $correo;
+        $this->clave = $clave;
     }
 
     function getDocumento() {
@@ -30,6 +32,10 @@ class PersonaDTO{
         return $this->correo;
     }
 
+    function getClave() {
+        return $this->clave;
+    }
+
     function setDocumento($documento) {
         $this->documento = $documento;
     }
@@ -44,6 +50,9 @@ class PersonaDTO{
 
     function setCorreo($correo) {
         $this->correo = $correo;
+    }
+    function setClave($correo) {
+        $this->clave = $clave;
     }
     
 }

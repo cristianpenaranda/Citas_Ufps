@@ -10,13 +10,11 @@ class DependenciaDAO{
             $nombre = $DepDTO->getNombre();
             $ubicacion = $DepDTO->getUbicacion();
             $telefono = $DepDTO->getTelefono();
-            $funcionario = $DepDTO->getFuncionario();
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("INSERT INTO  dependencia(nombre,ubicacion,telefono,funcionario) VALUES (?,?,?,?)");
+            $stm = $conexion->prepare("INSERT INTO  dependencia(nombre,ubicacion,telefono) VALUES (?,?,?)");
             $stm->bindParam(1, $nombre, PDO::PARAM_STR);
             $stm->bindParam(2, $ubicacion, PDO::PARAM_STR);
             $stm->bindParam(3, $telefono, PDO::PARAM_STR);
-            $stm->bindParam(4, $funcionario, PDO::PARAM_STR);
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception($ex->getTraceAsString());
@@ -47,13 +45,14 @@ class DependenciaDAO{
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT p.documento id,d.nombre,d.ubicacion,d.telefono,p.nombre funcionario FROM dependencia d LEFT JOIN persona p ON p.documento=d.funcionario");
+            $stm = $conexion->prepare("SELECT p.documento id,d.nombre,d.ubicacion,d.telefono,p.nombre funcionario FROM dependencia d INNER JOIN funcionario f ON f.dependencia=d.id LEFT JOIN persona p ON p.documento=f.documento");
             $stm->execute();
-            $pila = array();
+            $pila = $stm->fetchAll();
+            /*$pila = array();
             while ($consulta = $stm->fetch()) {
-                $depDTO = new DependenciaDTO($consulta['id'],$consulta['nombre'],$consulta['ubicacion'],$consulta['telefono'],$consulta['funcionario']);
+                $depDTO = new DependenciaDTO($consulta['id'],$consulta['nombre'],$consulta['ubicacion'],$consulta['telefono']);
                 array_push($pila, $depDTO);
-            }
+            }*/
         } catch (Exception $ex) {
             throw new Exception($ex->getTraceAsString());
         }
@@ -65,7 +64,7 @@ class DependenciaDAO{
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT d.nombre,d.ubicacion,d.telefono,p.nombre funcionario FROM dependencia d LEFT JOIN persona p ON p.documento=d.funcionario WHERE id=?");
+            $stm = $conexion->prepare("SELECT d.nombre,d.ubicacion,d.telefono FROM dependencia d WHERE id=?");
             $stm->bindParam(1, $idDep, PDO::PARAM_STR);
             $stm->execute();
             $dep = $stm->fetch();
@@ -74,6 +73,25 @@ class DependenciaDAO{
         }
         return $dep;
     } 
+    
+    //LISTAR DEPENDECIAS PARA EL REGISTRO UN FUNCIONARIO
+    static function listarDependenciasRegistroDAO(){
+        $conexion = Conexion::crearConexion();
+        try {
+            $dep = "";
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT id,nombre FROM dependencia");
+            $stm->execute();
+            $dep = array();
+            while ($consulta = $stm->fetch()) {
+                $depDTO = new DependenciaDTO($consulta['id'], $consulta['nombre'], null, null);
+                array_push($dep, $depDTO);
+            }
+        } catch (Exception $ex) {
+            throw new Exception("Error al listar dependencias para el registro de un funcionario");
+        }
+        return $dep;
+    }
     
     //MODIFICAR DEPENDENCIA
     static function modificarDependenciaDAO($DepDTO){

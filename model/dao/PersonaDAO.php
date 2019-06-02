@@ -17,6 +17,36 @@ class PersonaDAO{
         return $persona;
     }
     
+    //cambiar contraseña
+    static function cambiarContrasenaDAO($usuario,$clave){
+        $conexion = Conexion::crearConexion();
+        try {
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("UPDATE persona SET clave=? WHERE documento=?");
+            $stm->bindParam(1, $clave, PDO::PARAM_STR);
+            $stm->bindParam(2, $usuario, PDO::PARAM_STR);
+            $exito = $stm->execute();
+        } catch (Exception $ex) {
+            throw new Exception("Error al intentar cambiar contraseña de la persona en bd");
+        }
+        return $exito;
+    }
+    
+    //recordar contraseña
+    static function recordarContrasenaDAO($usuario){
+        $conexion = Conexion::crearConexion();
+        try {
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("select nombre,correo,clave from persona where documento=?");
+            $stm->bindParam(1, $usuario, PDO::PARAM_STR);
+            $stm->execute();
+            $persona = $stm->fetch();
+        } catch (Exception $ex) {
+            throw new Exception("Error al intentar recuperar contraseña de la persona en bd");
+        }
+        return $persona;
+    }
+    
     //busca persona en la bd
     static function buscarPersonaDAO($usuario){
         $conexion = Conexion::crearConexion();
@@ -41,13 +71,15 @@ class PersonaDAO{
             $nombre = $personaDTO->getNombre();
             $telefono = $personaDTO->getTelefono();
             $correo = $personaDTO->getCorreo();
+            $clave = $personaDTO->getClave();
             
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("INSERT INTO  persona(documento, nombre, telefono, correo) VALUES (?,?,?,?)");
+            $stm = $conexion->prepare("INSERT INTO  persona(documento, nombre, telefono, correo, clave) VALUES (?,?,?,?,?)");
             $stm->bindParam(1, $documento, PDO::PARAM_STR);
             $stm->bindParam(2, $nombre, PDO::PARAM_STR);
             $stm->bindParam(3, $telefono, PDO::PARAM_STR);
             $stm->bindParam(4, $correo, PDO::PARAM_STR);
+            $stm->bindParam(5, $clave, PDO::PARAM_STR);
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception("Error al registrar persona en bd");

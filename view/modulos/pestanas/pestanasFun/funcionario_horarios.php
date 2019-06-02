@@ -118,16 +118,9 @@ if (isset($_SESSION["Tipo"])) {
 <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="VerCitasPorHorario">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="padding: 5%;">
-            <form id="FormCitasAtender" method="POST">
+            <form id="FormCitasAtender" method="POST" autocomplete="off">
                 <h4 style="text-align: center;">Listado de Citas por Atender</h4>
                 <hr>
-                <div class="form-group input-group mt-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1"><ion-icon name="calendar"></ion-icon></span>
-                        </div>
-                        <input id="dateListadoCitas" name="dateListadoCitas" type="date" style="width: 70%;" required>
-                        <button class="btn btn-primary" title="Buscar Horarios" id="botonBuscarHorariosFun"><ion-icon name="search"></ion-icon></button>
-                </div>
                 <label id="MensajeErrorCitasFun"></label>
                 <div id="citasOcultos" style="display: none;">
                         

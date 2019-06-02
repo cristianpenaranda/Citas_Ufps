@@ -8,7 +8,7 @@ class UsuarioDAO{
         $persona = false;
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("select documento from usuario where documento=? and clave=?");
+            $stm = $conexion->prepare("SELECT f.documento FROM usuario f INNER JOIN persona p ON f.documento=? AND p.clave=?");
             $stm->bindParam(1, $usuario, PDO::PARAM_STR);
             $stm->bindParam(2, $contraseña, PDO::PARAM_STR);
             $stm->execute();
@@ -23,14 +23,13 @@ class UsuarioDAO{
     } 
     
     //registra usuario en la bd
-    static function registroUsuarioDAO($documento, $contraseña){
+    static function registroUsuarioDAO($documento){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("INSERT INTO  usuario(documento, clave) VALUES (?,?)");
+            $stm = $conexion->prepare("INSERT INTO  usuario(documento) VALUES (?)");
             $stm->bindParam(1, $documento, PDO::PARAM_STR);
-            $stm->bindParam(2, $contraseña, PDO::PARAM_STR);
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception("Error al registrar usuario en bd");

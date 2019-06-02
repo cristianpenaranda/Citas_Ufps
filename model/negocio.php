@@ -25,7 +25,7 @@ class negocio{
     //OBTIENE A PESTAÑA DEL MENU DE ADIMINISTRADOR
     private function validarPestañasAdmin($pestaña){
       $exito=false;
-      $pestañas=array("administrador_noticias","administrador_dependencias","administrador_funcionarios");
+      $pestañas=array("administrador_noticias","administrador_dependencias","administrador_funcionarios","administrador_imagenes");
       if(in_array($pestaña, $pestañas)){
            $exito=true;
        }
@@ -55,7 +55,7 @@ class negocio{
 	//OBTIENE A PESTAÑA DEL MENU
     private function validarPestañas($pestaña){
         $exito=false;
-        $pestañas=array("login","inicio","errorpage","perfil","salir");
+        $pestañas=array("login","inicio","errorpage","perfil","salir","guardarImagen");
         if(in_array($pestaña, $pestañas)){
             $exito=true;
         }
@@ -83,6 +83,9 @@ class negocio{
     public function mostrarTotalUsuNegocio(){
         return UsuarioDAO::mostrarTotalUsuDAO();
     }    
+    public function mostrarTotalImaNegocio(){
+        return ImagenDAO::mostrarTotalImaDAO();
+    }    
     //BUSCA ADMINISTRADOR PARA LOGUEAR
     public function buscarAdministradorNegocio($usuario, $contraseña){
         return AdministradorDAO::buscarAdministradorDAO($usuario, $contraseña);
@@ -103,9 +106,13 @@ class negocio{
     public function listarNoticiasAdminNegocio(){
         return NoticiaDAO::listarNoticiasAdminDAO();
     }      
-    //LISTAR FUNCIONARIOS PARA EL REGISTRO UNA DEPENDENCIA
-    public function listarFuncionariosRegistroNegocio(){
-        return FuncionarioDAO::listarFuncionariosRegistroDAO();
+    //LISTAR DEPENDENCIAS PARA EL REGISTRO UN FUNCIONARIO
+    public function listarDependenciasRegistroNegocio(){
+        return DependenciaDAO::listarDependenciasRegistroDAO();
+    }       
+    //LISTAR IMAGANES DEL CARRUSEL
+    public function listarImagenesNegocio(){
+        return ImagenDAO::listarImagenesDAO();
     }      
     //LISTAR FUNCIONARIOS 
     public function listarFuncionariosNegocio(){
@@ -122,6 +129,10 @@ class negocio{
     //MOSTRAR INFORMACION NOTICIA ADMINISTRADOR
     public function mostrarInfoNoticiaNegocio($idNoticia){
         return NoticiaDAO::mostrarInfoNoticiaDAO($idNoticia);
+    }          
+    //MOSTRAR IMAGEN LISTADO
+    public function mostrarImagenListadoNegocio($img){
+        return ImagenDAO::mostrarImagenListadoDAO($img);
     }       
     //MOSTRAR INFORMACION FUNCIONARIO
     public function mostrarInfoFuncionarioNegocio($idFuncionario){
@@ -134,6 +145,10 @@ class negocio{
     //ELIMINAR NOTICIA ADMINISTRADOR
     public function eliminarNoticiaNegocio($idNoticia){
         return NoticiaDAO::eliminarNoticiaDAO($idNoticia);
+    }           
+    //ELIMINAR IMAGEN
+    public function eliminarImagenNegocio($img){
+        return ImagenDAO::eliminarImagenDAO($img);
     }          
     //MODIFICAR NOTICIA ADMINISTRADOR
     public function modificarNoticiaNegocio($noticiaDTO){
@@ -148,8 +163,8 @@ class negocio{
         return DependenciaDAO::modificarDependenciaDAO($depDTO);
     }      
     //REGISTRA FUNCIONARIO
-    public function registroFuncionarioNegocio($usuario, $contraseña){
-        return FuncionarioDAO::registroFuncionarioDAO($usuario, $contraseña);
+    public function registroFuncionarioNegocio($usuario,$dep){
+        return FuncionarioDAO::registroFuncionarioDAO($usuario,$dep);
     }       
     
     
@@ -160,8 +175,8 @@ class negocio{
     } 
 
     //REGISTRAR USUARIO
-    public function registroUsuarioNegocio($usuario, $contraseña){
-        return UsuarioDAO::registroUsuarioDAO($usuario, $contraseña);
+    public function registroUsuarioNegocio($usuario){
+        return UsuarioDAO::registroUsuarioDAO($usuario);
     }  
 
     //LISTAR HORARIOS DE UNA DEPENDENCIA
@@ -195,8 +210,8 @@ class negocio{
     }  
 
     //LISTAR CITAS POR ATENDER 
-    public function listarCitasPorAtenderNegocio($fecha, $fun){
-        return CitaDAO::listarCitasPorAtenderDAO($fecha, $fun);
+    public function listarCitasPorAtenderNegocio($fun, $horario){
+        return CitaDAO::listarCitasPorAtenderDAO($fun, $horario);
     }  
 
     //CANCLEAR CITA
@@ -240,9 +255,21 @@ class negocio{
     //BUSCA DATOS DE PERSONA
     public function buscarDatosNegocio($persona){
         return PersonaDAO::buscarDatosPersonaDAO($persona);
-    }       
+    }     
+    //CAMBIAR CONTRASEÑA
+    public function cambiarContrasenaNegocio($persona,$clave){
+        return PersonaDAO::cambiarContrasenaDAO($persona,$clave);
+    }        
+    //RECORDAR CONTRASEÑA
+    public function recordarContrasenaNegocio($persona){
+        return PersonaDAO::recordarContrasenaDAO($persona);
+    }      
     //MODIFICAR PERSONA
     public function modificarPersonaNegocio($personaDTO){
         return PersonaDAO::modificarPersonaDAO($personaDTO);
+    }      
+    //BUSCAR INFORMACION DE LA CITA
+    public function buscarCitaNegocio($citaDTO){
+        return CitaDAO::buscarCitaDAO($citaDTO);
     }   
 }

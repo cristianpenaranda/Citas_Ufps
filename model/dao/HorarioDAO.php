@@ -28,7 +28,7 @@ class HorarioDAO {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT id,DATE_FORMAT(fecha,'%d-%c-%Y') fecha,hora_inicio,hora_fin,funcionario FROM horario WHERE funcionario=?");
+            $stm = $conexion->prepare("SELECT id,DATE_FORMAT(fecha,'%d-%b-%Y') fecha,hora_inicio,hora_fin,funcionario FROM horario WHERE funcionario=?");
             $stm->bindParam(1, $id, PDO::PARAM_STR);
             $stm->execute();
             $pila = array();
@@ -45,11 +45,13 @@ class HorarioDAO {
     //LISTAR HORARIOS DE UNA DEPENDENCIA
     static function listarHorarioSolicitudDAO($fecha, $dep) {
         $conexion = Conexion::crearConexion();
+        $fechaFin = date("y-m-d",strtotime($fecha."+ 8 days"));
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT h.id,h.fecha,h.hora_inicio,h.hora_fin,h.funcionario FROM horario h WHERE h.funcionario=? AND h.fecha=? ORDER BY h.hora_inicio");
+            $stm = $conexion->prepare("SELECT h.id,DATE_FORMAT(h.fecha,'%d-%M-%Y') fecha,h.hora_inicio,h.hora_fin,h.funcionario FROM horario h WHERE h.funcionario=? AND h.fecha >= ? AND h.fecha <= ? ORDER BY h.fecha ASC");
             $stm->bindParam(1, $dep, PDO::PARAM_STR);
             $stm->bindParam(2, $fecha, PDO::PARAM_STR);
+            $stm->bindParam(3, $fechaFin, PDO::PARAM_STR);
             $stm->execute();
             $pila = array();
             while ($consulta = $stm->fetch()) {
@@ -57,7 +59,7 @@ class HorarioDAO {
                 array_push($pila, $horarioDTO);
             }
         } catch (Exception $ex) {
-            throw new Exception("Error al listar horarios");
+            throw new Exception($ex->getTraceAsString());
         }
         return $pila;
     }

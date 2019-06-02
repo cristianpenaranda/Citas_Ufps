@@ -8,7 +8,7 @@ class FuncionarioDAO{
         $persona = false;
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT documento FROM funcionario WHERE documento=? AND clave=?");
+            $stm = $conexion->prepare("SELECT f.documento FROM funcionario f INNER JOIN persona p ON f.documento=? AND p.clave=?");
             $stm->bindParam(1, $usuario, PDO::PARAM_STR);
             $stm->bindParam(2, $contraseña, PDO::PARAM_STR);
             $stm->execute();
@@ -23,38 +23,19 @@ class FuncionarioDAO{
     }
     
     //REGISTRA EL FUNCIONARIO EN LA BD  
-    static function registroFuncionarioDAO($documento, $contraseña){
+    static function registroFuncionarioDAO($documento,$dep){
         $conexion = Conexion::crearConexion();
         $exito = false;
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("INSERT INTO  funcionario (documento, clave) VALUES (?,?)");
+            $stm = $conexion->prepare("INSERT INTO  funcionario (documento,dependencia) VALUES (?,?)");
             $stm->bindParam(1, $documento, PDO::PARAM_STR);
-            $stm->bindParam(2, $contraseña, PDO::PARAM_STR);
+            $stm->bindParam(2, $dep, PDO::PARAM_STR);
             $exito = $stm->execute();
         } catch (Exception $ex) {
             throw new Exception("Error al registrar funcionario en bd");
         }
         return $exito;
-    }
-    
-    //LISTAR FUNCIONARIOS PARA EL REGISTRO UNA DEPENDENCIA
-    static function listarFuncionariosRegistroDAO(){
-        $conexion = Conexion::crearConexion();
-        try {
-            $fun = "";
-            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("select p.documento,p.nombre from persona p inner join funcionario f on f.documento=p.documento and f.documento not in (select funcionario from dependencia)");
-            $stm->execute();
-            $fun = array();
-            while ($consulta = $stm->fetch()) {
-                $personaDTO = new PersonaDTO($consulta['documento'], $consulta['nombre'], Null, null);
-                array_push($fun, $personaDTO);
-            }
-        } catch (Exception $ex) {
-            throw new Exception("Error al listar funcionario para el registro de la dependencia");
-        }
-        return $fun;
     }
     
     //LISTAR FUNCIONARIOS
@@ -67,7 +48,7 @@ class FuncionarioDAO{
             $stm->execute();
             $fun = array();
             while ($consulta = $stm->fetch()) {
-                $personaDTO = new PersonaDTO($consulta['documento'], $consulta['nombre'], Null, null);
+                $personaDTO = new PersonaDTO($consulta['documento'], $consulta['nombre'], Null,null,null);
                 array_push($fun, $personaDTO);
             }
         } catch (Exception $ex) {
@@ -82,7 +63,7 @@ class FuncionarioDAO{
         $noticia = false;
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT p.documento,p.nombre,p.telefono,p.correo,d.nombre dependencia FROM persona p LEFT JOIN dependencia d ON p.documento=? INNER JOIN funcionario f ON f.documento=p.documento");
+            $stm = $conexion->prepare("SELECT p.documento,p.nombre,p.telefono,p.correo,d.nombre dependencia FROM persona p INNER JOIN dependencia d ON p.documento=? INNER JOIN funcionario f ON f.documento=p.documento WHERE f.dependencia=d.id");
             $stm->bindParam(1, $idFuncionario, PDO::PARAM_STR);
             $stm->execute();
             $persona = $stm->fetch();

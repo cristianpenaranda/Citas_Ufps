@@ -1,5 +1,6 @@
 var id = 0;
 $(document).ready(function () {
+
     //CARGAR NOTICIAS EN PESTAÑA INICIO
     if ($('#vista_inicio').is(':visible')) {
         //LISTAR NOTICIAS
@@ -16,7 +17,7 @@ $(document).ready(function () {
             }
         });
     }
-    
+
     //CARGAR TOTALES EN PESTAÑA INICIO
     if ($('#totalesAdmin').is(':visible')) {
         $.ajax({
@@ -27,6 +28,7 @@ $(document).ready(function () {
                 document.getElementById("totalFun").innerHTML = respuesta.split('ª')[1];
                 document.getElementById("totalNot").innerHTML = respuesta.split('ª')[2];
                 document.getElementById("totalUsu").innerHTML = respuesta.split('ª')[3];
+                document.getElementById("totalIma").innerHTML = respuesta.split('ª')[4];
             },
             error: function (jqXHR, estado, error) {
                 console.log(estado);
@@ -40,14 +42,14 @@ $(document).ready(function () {
     $("#botonRegistroNoticiaAdmin").click(function () {
         $("#FormNoticiaAdmin").validate({
             rules: {
-                registroTituloAdmin: {required: true},
-                registroDescAdmin: {required: true}
+                registroTituloAdmin: { required: true },
+                registroDescAdmin: { required: true }
             },
             messages:
-                    {
-                        registroTituloAdmin: "<span style='color:red'> ✘ </span>",
-                        registroDescAdmin: "<span style='color:red'> ✘ </span>"
-                    },
+            {
+                registroTituloAdmin: "<span style='color:red'> ✘ </span>",
+                registroDescAdmin: "<span style='color:red'> ✘ </span>"
+            },
 
             submitHandler: function (form) {
 
@@ -65,8 +67,7 @@ $(document).ready(function () {
                     beforeSend: function () {
                         respuestaInfoEspera("Espera un momento por favor.");
                     },
-                    success: function (respuesta)
-                    {
+                    success: function (respuesta) {
                         if (respuesta["exito"]) {
                             exito("Ingreso de noticia con éxito !", "");
                             $('#registroTituloAdmin').val("");
@@ -99,61 +100,60 @@ $(document).ready(function () {
             url: 'view/modulos/ajax.php?listarNoticiasAdmin=true',
             dataType: 'text',
             success: function (respuesta) {
-                
+
                 if (respuesta === "false") {
                     $('#mensajeNoticiasAdm').html("<h4>Listado de Noticias</h4><hr><label style='color:red;'>No tiene noticias registradas</label>");
                 } else {
-                    $('#mensajeNoticiasAdm').html("<h4>Listado de Noticias</h4><hr><table class='tabla table table-sm'>"+
-                                                        "<thead>"+
-                                                            "<tr>"+
-                                                                "<th scope='col' style='width: 5%;'>#</th>"+
-                                                                "<th scope='col' style='width: 30%;'>Fecha</th>"+
-                                                                "<th scope='col' style='width: 50%;'>Titulo</th>"+
-                                                                "<th scope='col' style='width: 10%;'>Opciones</th>"+
-                                                            "</tr>"+
-                                                        "</thead>"+
-                                                        "<tbody id='tablaNoticiasAdmin'>"+
-                                                        "</tbody>"+
-                                                    "</table> ");
-                document.getElementById("tablaNoticiasAdmin").innerHTML = respuesta;
-                //VER INFORMACION DE LA NOTICIA DEL ADMINISTRADOR
-                $(".verNoticiaAdmin").bind("click", function () {
-                    var datos = {
-                        idNoticia: $(this).attr("id")
-                    };
-                    id = datos['idNoticia'];
-                    $.ajax({
-                        url: 'view/modulos/ajax.php',
-                        method: 'post',
-                        data: datos,
-                        dataType: "json",
+                    $('#mensajeNoticiasAdm').html("<h4>Listado de Noticias</h4><hr><table class='tabla table table-responsive-md'>" +
+                        "<thead>" +
+                        "<tr>" +
+                        "<th scope='col' style='width: 5%;'>#</th>" +
+                        "<th scope='col' style='width: 30%;'>Fecha</th>" +
+                        "<th scope='col' style='width: 50%;'>Titulo</th>" +
+                        "<th scope='col' style='width: 10%;'>Opciones</th>" +
+                        "</tr>" +
+                        "</thead>" +
+                        "<tbody id='tablaNoticiasAdmin'>" +
+                        "</tbody>" +
+                        "</table> ");
+                    document.getElementById("tablaNoticiasAdmin").innerHTML = respuesta;
+                    //VER INFORMACION DE LA NOTICIA DEL ADMINISTRADOR
+                    $(".verNoticiaAdmin").bind("click", function () {
+                        var datos = {
+                            idNoticia: $(this).attr("id")
+                        };
+                        id = datos['idNoticia'];
+                        $.ajax({
+                            url: 'view/modulos/ajax.php',
+                            method: 'post',
+                            data: datos,
+                            dataType: "json",
 
-                        success: function (respuesta)
-                        {
-                            var fecha = respuesta["respuesta"].toString().split("ª")[2];
-                            var titulo = respuesta["respuesta"].toString().split("ª")[0];
-                            var descripcion = respuesta["respuesta"].toString().split("ª")[1];
-                            $('#ModalNoticiaAdminFecha').val(fecha);
-                            $('#ModalNoticiaAdminTitulo').val(titulo);
-                            $('#ModalNoticiaAdminDescripcion').val(descripcion);
-                        },
-                        error: function (jqXHR, estado, error) {
-                            console.log(estado);
-                            console.log(error);
-                            console.log(jqXHR);
-                        }
+                            success: function (respuesta) {
+                                var fecha = respuesta["respuesta"].toString().split("ª")[2];
+                                var titulo = respuesta["respuesta"].toString().split("ª")[0];
+                                var descripcion = respuesta["respuesta"].toString().split("ª")[1];
+                                $('#ModalNoticiaAdminFecha').val(fecha);
+                                $('#ModalNoticiaAdminTitulo').val(titulo);
+                                $('#ModalNoticiaAdminDescripcion').val(descripcion);
+                            },
+                            error: function (jqXHR, estado, error) {
+                                console.log(estado);
+                                console.log(error);
+                                console.log(jqXHR);
+                            }
 
+                        });
                     });
-                });
-                //ELIMINAR NOTICIA DE ADMINISTRADOR
-                $(".eliminarNoticiaAdmin").bind("click", function () {
-                    swal({
-                        title: "¿Está seguro de eliminar la noticia?",
-                        text: "",
-                        icon: "warning",
-                        buttons: ["Cancelar", "Aceptar"],
-                        dangerMode: true
-                    })
+                    //ELIMINAR NOTICIA DE ADMINISTRADOR
+                    $(".eliminarNoticiaAdmin").bind("click", function () {
+                        swal({
+                            title: "¿Está seguro de eliminar la noticia?",
+                            text: "",
+                            icon: "warning",
+                            buttons: ["Cancelar", "Aceptar"],
+                            dangerMode: true
+                        })
                             .then((willDelete) => {
                                 if (willDelete) {
                                     var datos = {
@@ -165,8 +165,7 @@ $(document).ready(function () {
                                         data: datos,
                                         dataType: "json",
 
-                                        success: function (respuesta)
-                                        {
+                                        success: function (respuesta) {
                                             if (respuesta["exito"]) {
                                                 exito("Noticia eliminada", "");
                                                 listarNoticiasAdmin();
@@ -184,16 +183,16 @@ $(document).ready(function () {
                                     });
                                 }
                             });
-                });
-                //MODIFICAR NOTICIA DE ADMINISTRADOR
-                $(".modificarNoticiaAdmin").bind("click", function () {
-                    swal({
-                        title: "¿Está seguro de modificar la noticia?",
-                        text: "",
-                        icon: "warning",
-                        buttons: ["Cancelar", "Aceptar"],
-                        dangerMode: false
-                    })
+                    });
+                    //MODIFICAR NOTICIA DE ADMINISTRADOR
+                    $(".modificarNoticiaAdmin").bind("click", function () {
+                        swal({
+                            title: "¿Está seguro de modificar la noticia?",
+                            text: "",
+                            icon: "warning",
+                            buttons: ["Cancelar", "Aceptar"],
+                            dangerMode: false
+                        })
                             .then((willDelete) => {
                                 if (willDelete) {
                                     var datos = {
@@ -208,8 +207,7 @@ $(document).ready(function () {
                                         data: datos,
                                         dataType: "json",
 
-                                        success: function (respuesta)
-                                        {
+                                        success: function (respuesta) {
                                             if (respuesta["exito"]) {
                                                 exito("Noticia Modificada", "");
                                                 listarNoticiasAdmin();
@@ -227,8 +225,8 @@ $(document).ready(function () {
                                     });
                                 }
                             });
-                });
-            }
+                    });
+                }
             },
             error: function (jqXHR, estado, error) {
                 console.log(estado);
@@ -238,14 +236,14 @@ $(document).ready(function () {
         });
     }
 
-    //CARGAR FUNCIONARIOS EN COMBO DEL REGISTRO DE LA DEPENDENCIA
-    if ($('#vista_Admin_Dependencias').is(':visible')) {
-        //LISTAR FUNCIONARIOS EN COMBO DEL REGISTRO DE LA DEPENDENCIA
+    //CARGAR DEPENDENCIAS EN COMBO DEL REGISTRO DEL FUNCIONARIO
+    if ($('#vista_Admin_Funcionarios').is(':visible')) {
+        //LISTAR DEPENDECNCIAS EN COMBO DEL REGISTRO DEL FUNCIONARIO
         $.ajax({
-            url: 'view/modulos/ajax.php?listarFuncionariosRegistro=true',
+            url: 'view/modulos/ajax.php?listarDependenciasRegistro=true',
             dataType: 'text',
             success: function (respuesta) {
-                document.getElementById("ingresarFuncionarioDep").innerHTML = respuesta;
+                document.getElementById("registroDepFuncionario").innerHTML = respuesta;
             },
             error: function (jqXHR, estado, error) {
                 console.log(estado);
@@ -259,61 +257,71 @@ $(document).ready(function () {
     $("#botonRegistroFuncionario").click(function () {
         $("#FormFuncionario").validate({
             rules: {
-                registroDocumentoFuncionario: {required: true},
-                registroNombreFuncionario: {required: true},
-                registroTelefonoFuncionario: {required: true},
-                registroCorreoFuncionario: {required: true},
-                registroClaveFuncionario: {required: true}
+                registroDocumentoFuncionario: { required: true },
+                registroNombreFuncionario: { required: true },
+                registroTelefonoFuncionario: { required: true },
+                registroCorreoFuncionario: { required: true },
+                registroDepFuncionario: { required: true },
+                registroClaveFuncionario: { required: true }
             },
             messages:
-                    {
-                        registroDocumentoFuncionario: "<span style='color:red'> ✘ </span>",
-                        registroNombreFuncionario: "<span style='color:red'> ✘ </span>",
-                        registroTelefonoFuncionario: "<span style='color:red'> ✘ </span>",
-                        registroCorreoFuncionario: "<span style='color:red'> ✘ </span>",
-                        registroClaveFuncionario: "<span style='color:red'> ✘ </span>"
-                    },
+            {
+                registroDocumentoFuncionario: "<span style='color:red'> ✘ </span>",
+                registroNombreFuncionario: "<span style='color:red'> ✘ </span>",
+                registroTelefonoFuncionario: "<span style='color:red'> ✘ </span>",
+                registroCorreoFuncionario: "<span style='color:red'> ✘ </span>",
+                registroDepFuncionario: "<span style='color:red'> ✘ </span>",
+                registroClaveFuncionario: "<span style='color:red'> ✘ </span>"
+            },
 
             submitHandler: function (form) {
+                var clave = $("#registroClaveFuncionario").val();
+                if (clave.length == 0) {
+                    document.getElementById("label_cambiarContrasena").innerHTML = "Ingrese la nueva contraseña";
+                } else if (clave.length <= 9) {
+                    document.getElementById("label_registro_funcionario").innerHTML = "La contraseña debe tener mínimo 10 caracteres";
+                } else {
+                    var datos = {
+                        registroDocumentoFuncionario: $("#registroDocumentoFuncionario").val(),
+                        registroNombreFuncionario: $("#registroNombreFuncionario").val(),
+                        registroTelefonoFuncionario: $("#registroTelefonoFuncionario").val(),
+                        registroCorreoFuncionario: $("#registroCorreoFuncionario").val(),
+                        registroDepFuncionario: $("#registroDepFuncionario").val(),
+                        registroClaveFuncionario: $("#registroClaveFuncionario").val()
+                    };
+                    $.ajax({
+                        url: 'view/modulos/ajax.php',
+                        method: 'post',
+                        data: datos,
+                        dataType: "json",
 
-                var datos = {
-                    registroDocumentoFuncionario: $("#registroDocumentoFuncionario").val(),
-                    registroNombreFuncionario: $("#registroNombreFuncionario").val(),
-                    registroTelefonoFuncionario: $("#registroTelefonoFuncionario").val(),
-                    registroCorreoFuncionario: $("#registroCorreoFuncionario").val(),
-                    registroClaveFuncionario: $("#registroClaveFuncionario").val()
-                };
-                $.ajax({
-                    url: 'view/modulos/ajax.php',
-                    method: 'post',
-                    data: datos,
-                    dataType: "json",
+                        beforeSend: function () {
+                            respuestaInfoEspera("Espera un momento por favor.");
+                        },
+                        success: function (respuesta) {
+                            if (respuesta["exito"]) {
+                                exito("Registro Exitoso!", "");
+                                $("#registroDocumentoFuncionario").val("");
+                                $("#registroNombreFuncionario").val("");
+                                $("#registroTelefonoFuncionario").val("");
+                                $("#registroCorreoFuncionario").val("");
+                                $("#registroDepFuncionario").val("");
+                                $("#registroClaveFuncionario").val("");
+                                document.getElementById("label_registro_funcionario").innerHTML = "";
+                                listarFuncionarios();
+                            } else {
+                                respuestaError("ERROR", respuesta["error"]);
+                            }
 
-                    beforeSend: function () {
-                        respuestaInfoEspera("Espera un momento por favor.");
-                    },
-                    success: function (respuesta)
-                    {
-                        if (respuesta["exito"]) {
-                            exito("Registro Exitoso!", "");
-                            $("#registroDocumentoFuncionario").val("");
-                            $("#registroNombreFuncionario").val("");
-                            $("#registroTelefonoFuncionario").val("");
-                            $("#registroCorreoFuncionario").val("");
-                            $("#registroClaveFuncionario").val("");
-                            listarFuncionarios();
-                        } else {
-                            respuestaError("ERROR", respuesta["error"]);
+                        },
+                        error: function (jqXHR, estado, error) {
+                            console.log(estado);
+                            console.log(error);
+                            console.log(jqXHR);
                         }
 
-                    },
-                    error: function (jqXHR, estado, error) {
-                        console.log(estado);
-                        console.log(error);
-                        console.log(jqXHR);
-                    }
-
-                });
+                    });
+                }
             }
         });
     });
@@ -342,8 +350,7 @@ $(document).ready(function () {
                         data: datos,
                         dataType: "json",
 
-                        success: function (respuesta)
-                        {
+                        success: function (respuesta) {
                             var doc = respuesta["respuesta"].toString().split("ª")[0];
                             var nom = respuesta["respuesta"].toString().split("ª")[1];
                             var tel = respuesta["respuesta"].toString().split("ª")[2];
@@ -376,39 +383,38 @@ $(document).ready(function () {
                         buttons: ["Cancelar", "Aceptar"],
                         dangerMode: false
                     })
-                            .then((willDelete) => {
-                                if (willDelete) {
-                                    var datos = {
-                                        idFuncionarioModificar: id,
-                                        nombreFuncionarioModificar: $('#ModalNombreFuncionario').val(),
-                                        telefonoFuncionarioModificar: $('#ModalTelefonoFuncionario').val(),
-                                        correoFuncionarioModificar: $('#ModalCorreoFuncionario').val()
-                                    };
-                                    $.ajax({
-                                        url: 'view/modulos/ajax.php',
-                                        method: 'post',
-                                        data: datos,
-                                        dataType: "json",
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                var datos = {
+                                    idFuncionarioModificar: id,
+                                    nombreFuncionarioModificar: $('#ModalNombreFuncionario').val(),
+                                    telefonoFuncionarioModificar: $('#ModalTelefonoFuncionario').val(),
+                                    correoFuncionarioModificar: $('#ModalCorreoFuncionario').val()
+                                };
+                                $.ajax({
+                                    url: 'view/modulos/ajax.php',
+                                    method: 'post',
+                                    data: datos,
+                                    dataType: "json",
 
-                                        success: function (respuesta)
-                                        {
-                                            if (respuesta["exito"]) {
-                                                exito("Funcionario Modificado", "");
-                                                listarFuncionarios();
-                                                $(".cerrarModal").click();
-                                            } else if (!respuesta["exito"]) {
-                                                respuestaError("Error al modificar", respuesta["error"]);
-                                            }
-                                        },
-                                        error: function (jqXHR, estado, error) {
-                                            console.log(estado);
-                                            console.log(error);
-                                            console.log(jqXHR);
+                                    success: function (respuesta) {
+                                        if (respuesta["exito"]) {
+                                            exito("Funcionario Modificado", "");
+                                            listarFuncionarios();
+                                            $(".cerrarModal").click();
+                                        } else if (!respuesta["exito"]) {
+                                            respuestaError("Error al modificar", respuesta["error"]);
                                         }
+                                    },
+                                    error: function (jqXHR, estado, error) {
+                                        console.log(estado);
+                                        console.log(error);
+                                        console.log(jqXHR);
+                                    }
 
-                                    });
-                                }
-                            });
+                                });
+                            }
+                        });
                 });
             },
             error: function (jqXHR, estado, error) {
@@ -418,32 +424,29 @@ $(document).ready(function () {
             },
         });
     }
-    
-    
+
+
     //REGISTRAR NUEVA DEPENDENCIA
     $("#botonRegistroDependencia").click(function () {
         $("#FormDependencia").validate({
             rules: {
-                registroNombreDep: {required: true},
-                registroUbicacionDep: {required: true},
-                registroTelefonoDep: {required: true},
-                ingresarFuncionarioDep: {required: true}
+                registroNombreDep: { required: true },
+                registroUbicacionDep: { required: true },
+                registroTelefonoDep: { required: true }
             },
             messages:
-                    {
-                        registroNombreDep: "<span style='color:red'> ✘ </span>",
-                        registroUbicacionDep: "<span style='color:red'> ✘ </span>",
-                        registroTelefonoDep: "<span style='color:red'> ✘ </span>",
-                        ingresarFuncionarioDep: "<span style='color:red'> ✘ </span>"
-                    },
+            {
+                registroNombreDep: "<span style='color:red'> ✘ </span>",
+                registroUbicacionDep: "<span style='color:red'> ✘ </span>",
+                registroTelefonoDep: "<span style='color:red'> ✘ </span>"
+            },
 
             submitHandler: function (form) {
 
                 var datos = {
                     registroNombreDep: $("#registroNombreDep").val(),
                     registroUbicacionDep: $("#registroUbicacionDep").val(),
-                    registroTelefonoDep: $("#registroTelefonoDep").val(),
-                    ingresarFuncionarioDep: $("#ingresarFuncionarioDep").val()
+                    registroTelefonoDep: $("#registroTelefonoDep").val()
                 };
                 $.ajax({
                     url: 'view/modulos/ajax.php',
@@ -454,14 +457,12 @@ $(document).ready(function () {
                     beforeSend: function () {
                         respuestaInfoEspera("Espera un momento por favor.");
                     },
-                    success: function (respuesta)
-                    {
+                    success: function (respuesta) {
                         if (respuesta["exito"]) {
                             exito("Registro Exitoso!", "");
                             $("#registroNombreDep").val("");
                             $("#registroUbicacionDep").val("");
                             $("#registroTelefonoDep").val("");
-                            $("#ingresarFuncionarioDep").val("");
                             listarDependencias()
                         } else {
                             respuestaError("ERROR", respuesta["error"]);
@@ -503,8 +504,7 @@ $(document).ready(function () {
                         data: datos,
                         dataType: "json",
 
-                        success: function (respuesta)
-                        {
+                        success: function (respuesta) {
                             var nom = respuesta["respuesta"].toString().split("ª")[0];
                             var ubi = respuesta["respuesta"].toString().split("ª")[1];
                             var tel = respuesta["respuesta"].toString().split("ª")[2];
@@ -535,39 +535,38 @@ $(document).ready(function () {
                         buttons: ["Cancelar", "Aceptar"],
                         dangerMode: false
                     })
-                            .then((willDelete) => {
-                                if (willDelete) {
-                                    var datos = {
-                                        idDepModificar: id,
-                                        nombreDepModificar: $('#ModalNombreDep').val(),
-                                        ubicacionDepModificar: $('#ModalUbicacionDep').val(),
-                                        telefonoDepModificar: $('#ModalTelefonoDep').val()
-                                    };
-                                    $.ajax({
-                                        url: 'view/modulos/ajax.php',
-                                        method: 'post',
-                                        data: datos,
-                                        dataType: "json",
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                var datos = {
+                                    idDepModificar: id,
+                                    nombreDepModificar: $('#ModalNombreDep').val(),
+                                    ubicacionDepModificar: $('#ModalUbicacionDep').val(),
+                                    telefonoDepModificar: $('#ModalTelefonoDep').val()
+                                };
+                                $.ajax({
+                                    url: 'view/modulos/ajax.php',
+                                    method: 'post',
+                                    data: datos,
+                                    dataType: "json",
 
-                                        success: function (respuesta)
-                                        {
-                                            if (respuesta["exito"]) {
-                                                exito("Dependencia Modificada", "");
-                                                listarDependencias();
-                                                $(".cerrarModal").click();
-                                            } else if (!respuesta["exito"]) {
-                                                respuestaError("Error al modificar", respuesta["error"]);
-                                            }
-                                        },
-                                        error: function (jqXHR, estado, error) {
-                                            console.log(estado);
-                                            console.log(error);
-                                            console.log(jqXHR);
+                                    success: function (respuesta) {
+                                        if (respuesta["exito"]) {
+                                            exito("Dependencia Modificada", "");
+                                            listarDependencias();
+                                            $(".cerrarModal").click();
+                                        } else if (!respuesta["exito"]) {
+                                            respuestaError("Error al modificar", respuesta["error"]);
                                         }
+                                    },
+                                    error: function (jqXHR, estado, error) {
+                                        console.log(estado);
+                                        console.log(error);
+                                        console.log(jqXHR);
+                                    }
 
-                                    });
-                                }
-                            });
+                                });
+                            }
+                        });
                 });
             },
             error: function (jqXHR, estado, error) {
@@ -578,3 +577,104 @@ $(document).ready(function () {
         });
     }
 });
+
+if ($('#vista_Admin_imagenes').is(':visible')) {
+    //LISTAR IMAGENES GUARDADAS
+    cargarListadoImagenes();
+}
+
+function cargarListadoImagenes() {
+    $.ajax({
+        url: 'view/modulos/ajax.php?listarImagenes=true',
+        dataType: 'text',
+        success: function (respuesta) {
+            var cmp = respuesta == "";
+            if(cmp) {
+                document.getElementById("tablaImagenes").innerHTML = "<tr><td></td><td style='color:red;'>No hay Imágenes...</td></tr>";
+            }else {
+                document.getElementById("tablaImagenes").innerHTML = respuesta;
+                //VER IMAGEN
+                $(".verImagenListado").bind("click", function () {
+                    var datos = {
+                        idImagenBuscar: $(this).attr("id")
+                    };
+                    id = datos['idImagenBuscar'];
+                    $.ajax({
+                        url: 'view/modulos/ajax.php',
+                        method: 'post',
+                        data: datos,
+                        dataType: "json",
+                        success: function (respuesta) {
+                            $('#vistaImagenListado').attr('src', respuesta['respuesta']);
+                        },
+                        error: function (jqXHR, estado, error) {
+                            console.log(estado);
+                            console.log(error);
+                            console.log(jqXHR);
+                        }
+
+                    });
+                });
+                //ELIMINAR IMAGEN
+                $(".eliminarImagenListado").bind("click", function () {
+                    swal({
+                        title: "¿Está seguro de eliminar la imagen?",
+                        text: "",
+                        icon: "warning",
+                        buttons: ["Cancelar", "Aceptar"],
+                        dangerMode: true
+                    })
+                        .then((willDelete) => {
+                            if (willDelete) {
+                                var datos = {
+                                    idNoticiaEliminar: id
+                                };
+                                var datos = {
+                                    idImagenEliminar: $(this).attr("id")
+                                };
+                                id = datos['idImagenEliminar'];
+                                $.ajax({
+                                    url: 'view/modulos/ajax.php',
+                                    method: 'post',
+                                    data: datos,
+                                    dataType: "json",
+                                    success: function () {
+                                        exito("La imágen se ha eliminado!", "");
+                                        cargarListadoImagenes();
+                                    },
+                                    error: function (jqXHR, estado, error) {
+                                        console.log(estado);
+                                        console.log(error);
+                                        console.log(jqXHR);
+                                    }
+
+                                });
+                            }
+                        });
+                });
+            }
+        },
+        error: function (jqXHR, estado, error) {
+            console.log(estado);
+            console.log(error);
+            console.log(jqXHR);
+        }
+    });
+}
+
+if ($('#vista_inicio').is(':visible')) {
+    $.ajax({
+        url: 'view/modulos/ajax.php?listarImagenesInicio=true',
+        dataType: 'text',
+        success: function (respuesta) {
+            if (respuesta != 'false') {
+                document.getElementById("carousel-inner").innerHTML = respuesta;
+            }
+        },
+        error: function (jqXHR, estado, error) {
+            console.log(estado);
+            console.log(error);
+            console.log(jqXHR);
+        }
+    });
+}

@@ -39,7 +39,9 @@ class NoticiaDAO {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("select n.id,n.titulo,n.descripcion,REPLACE(n.administrador,administrador,'Administrador') administrador,DATE_FORMAT(n.fecha, '%d-%b-%Y') fecha,REPLACE(n.funcionario,n.funcionario, (SELECT p.nombre from persona p where p.documento=n.funcionario)) funcionario from noticia n order by id desc limit 9");
+            $x= $conexion->prepare("SET lc_time_names = 'es_ES';");
+            $x->execute();
+            $stm = $conexion->prepare("select n.id,n.titulo,n.descripcion,REPLACE(n.administrador,administrador,'Administrador') administrador,DATE_FORMAT(n.fecha, '%d-%b-%Y') fecha,REPLACE(n.funcionario,n.funcionario, (SELECT p.nombre from persona p where p.documento=n.funcionario)) funcionario from noticia n order by id desc limit 3");
             $stm->execute();
             $pila = array();
             while ($consulta = $stm->fetch()) {

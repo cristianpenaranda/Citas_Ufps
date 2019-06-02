@@ -13,8 +13,8 @@ class controladorUsuario{
     }
     
     //registra el usuario
-    public function registroUsuarioControlador($usuario, $contraseña){
-        return $this->negocioUsuario->registroUsuarioNegocio($usuario, $contraseña);
+    public function registroUsuarioControlador($usuario){
+        return $this->negocioUsuario->registroUsuarioNegocio($usuario);
     }
     
     //LISTAR HORARIOS DE UNA DEPENDENCIA
@@ -48,8 +48,8 @@ class controladorUsuario{
     }
     
     //LISTAR CITAS POR ATENDER
-    public function listarCitasPorAtenderControlador($fecha, $fun){
-        return $this->negocioUsuario->listarCitasPorAtenderNegocio($fecha, $fun);
+    public function listarCitasPorAtenderControlador($fun, $horario){
+        return $this->negocioUsuario->listarCitasPorAtenderNegocio($fun, $horario);
     }
     
     //CANCELAR CITA

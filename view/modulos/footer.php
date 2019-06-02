@@ -7,13 +7,15 @@
 			</div>
 			<div class="col-md-4 redes_sociales mb-3 mt-3">
 				<p>Diseñado por:<br>
-					Cristian Peñaranda - 1151190 <br>
-                                        cristiancamilops@ufps.edu.co
+					Cristian Camilo Peñaranda - 1151190 <br>
+					Jhon Jairo Carrillo - 1151168 <br>
+					Milton Alexander Cely - 1151180
 			</div>
 			<div class="col-md-4 mt-3">
-				<p>&#169; 2018<br>
+				<p>&#169; 2019<br>
 					Todos los derechos reservados <br>
-					Análisis y Diseño
+					Programa de Ingeniería de Sistemas <br>
+					Ingeniería de Software
 				</p>
 			</div>
 		</div>

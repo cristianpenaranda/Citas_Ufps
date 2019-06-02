@@ -5,6 +5,7 @@ include_once '../../model/dto/NoticiaDTO.php';
 include_once '../../model/dto/DependenciaDTO.php';
 include_once '../../model/dto/HorarioDTO.php';
 include_once '../../model/dto/CitaDTO.php';
+include_once '../../model/dto/ImagenDTO.php';
 
 require_once '../../model/dao/UsuarioDAO.php';
 require_once '../../model/dao/PersonaDAO.php';
@@ -14,6 +15,7 @@ require_once '../../model/dao/NoticiaDAO.php';
 require_once '../../model/dao/DependenciaDAO.php';
 require_once '../../model/dao/HorarioDAO.php';
 require_once '../../model/dao/CitaDAO.php';
+require_once '../../model/dao/ImagenDAO.php';
 
 require_once '../../controller/controlador.php';
 require_once '../../controller/controladorAdministrador.php';
@@ -21,17 +23,21 @@ require_once '../../controller/controladorFuncionario.php';
 require_once '../../controller/controladorUsuario.php';
 
 require_once '../../model/negocio.php';
+//require_once '../../config.php';
 require_once '../../model/conexion.php';
+require_once '../../model/mail/Mail.php';
 
 class Ajax {
 
     private $controlador;
+    private $mail;
     private $controladorAdministrador;
     private $controladorFuncionario;
     private $controladorUsuario;
 
     public function __construct() {
         $this->controlador = new controlador();
+        $this->mail = new Mail();
         $this->controladorAdministrador = new controladorAdministrador();
         $this->controladorFuncionario = new controladorFuncionario();
         $this->controladorUsuario = new controladorUsuario();
@@ -61,7 +67,8 @@ class Ajax {
         $consultaFun = $this->controladorAdministrador->mostrarTotalFunControlador();
         $consultaNot = $this->controladorAdministrador->mostrarTotalNotControlador();
         $consultaUsu = $this->controladorAdministrador->mostrarTotalUsuControlador();
-        $totales = $consultaDep['cantidad'].'ª'.$consultaFun['cantidad'].'ª'.$consultaNot['cantidad'].'ª'.$consultaUsu['cantidad'];        
+        $consultaIma = $this->controladorAdministrador->mostrarTotalImaControlador();
+        $totales = $consultaDep['cantidad'].'ª'.$consultaFun['cantidad'].'ª'.$consultaNot['cantidad'].'ª'.$consultaUsu['cantidad'].'ª'.$consultaIma['cantidad'];        
         echo $totales;
     }
 
@@ -87,7 +94,7 @@ class Ajax {
                     session_start();
                     $tipo = "Funcionario";
                     $datos = $this->controlador->buscarDatosControlador($usuario);
-                    $personaDTO = new PersonaDTO($datos['documento'], $datos['nombre'], $datos['telefono'], $datos['correo']);
+                    $personaDTO = new PersonaDTO($datos['documento'], $datos['nombre'], $datos['telefono'], $datos['correo'],null);
                     $_SESSION["Tipo"] = serialize($tipo);
                     $_SESSION["Usuario"] = serialize($personaDTO);
                     echo json_encode(array("exito" => true));
@@ -100,7 +107,7 @@ class Ajax {
                     session_start();
                     $tipo = "Usuario";
                     $datos = $this->controlador->buscarDatosControlador($usuario);
-                    $personaDTO = new PersonaDTO($datos['documento'], $datos['nombre'], $datos['telefono'], $datos['correo']);
+                    $personaDTO = new PersonaDTO($datos['documento'], $datos['nombre'], $datos['telefono'], $datos['correo'],null);
                     $_SESSION["Tipo"] = serialize($tipo);
                     $_SESSION["Usuario"] = serialize($personaDTO);
                     echo json_encode(array("exito" => true));
@@ -113,6 +120,50 @@ class Ajax {
         }
     }
 
+
+    //CAMBIAR CONTRASEÑA 
+    public function CambiarContrasenaAjax($usuario, $clave) {
+        $exito = false;
+        try {
+            $encriptar = $this->encriptar($clave);
+            $consulta = $this->controlador->cambiarContrasenaControlador($usuario, $encriptar);
+            if($consulta){
+                $exito = true;
+            }
+        } catch (Exception $exc) {
+            echo $exc->getMessage();
+        }
+        if ($exito) {
+            echo "exito";
+        } else {
+            echo "Error al cambiar la contraseña";
+        }
+    } 
+
+
+    //RECORDAR CONTRASEÑA 
+    public function RecordarContrasenaAjax($usuario) {
+        $exito = false;
+        try {
+            $consulta = $this->controlador->buscarPersonaControlador($usuario);
+            if($consulta){
+                $recordar = $this->controlador->recordarContrasenaControlador($usuario);
+                $desencriptar = $this->desencriptar($recordar['clave']);
+                $this->mail->enviarCorreoRecordarContraseña($recordar['nombre'],$recordar['correo'],$desencriptar);
+                $exito = true;
+            }else{
+                $exito = false;
+            }
+        } catch (Exception $exc) {
+            echo json_encode(array("exito" => false, "error" => $exc->getMessage()));
+        }
+        if ($exito) {
+            echo json_encode(array("exito" => true));
+        } else {
+            echo json_encode(array("exito" => false, "error" => "error"));
+        }
+    } 
+
     //REGISTRO DE UN USUARIO NUEVO
     public function RegistroUsuarioAjax($documento, $nombre, $telefono, $correo, $clave) {
         $exito = false;
@@ -121,10 +172,11 @@ class Ajax {
             $consulta = $this->controlador->buscarPersonaControlador($documento);
             if (!$consulta) {
                 //registra en tabla persona
-                $personaDTO = new PersonaDTO($documento, $nombre, $telefono, $correo);
+                $personaDTO = new PersonaDTO($documento, $nombre, $telefono, $correo, $encriptar);
                 $registroPersona = $this->controlador->registroPersonaControlador($personaDTO);
                 //registra en tabla cliente
-                $registroCliente = $this->controladorUsuario->registroUsuarioControlador($documento, $encriptar);
+                $registroCliente = $this->controladorUsuario->registroUsuarioControlador($documento);
+                $this->mail->enviarCorreoRegistro($nombre,$correo,$clave,$documento);
                 $exito = true;
             }
         } catch (Exception $exc) {
@@ -299,21 +351,96 @@ class Ajax {
         }
     }
     
+    //ELIMINAR IMAGEN LISTADO
+    public function eliminarImagenAjax($img) {
+        $exito = false;
+        try {
+            $buscar = $this->controladorAdministrador->mostrarImagenListadoControlador($img);
+            $imagenEliminar = "C:/xampp/htdocs/Citas_Ufps/".$buscar->getArchivo();
+            unlink($imagenEliminar);
+            $consulta = $this->controladorAdministrador->eliminarImagenControlador($img);
+            if ($consulta) {
+                $exito = true;
+            }
+        } catch (Exception $exc) {
+            echo json_encode(array("exito" => false, "error" => $exc->getMessage()));
+        }
+        if ($exito) {
+            echo json_encode(array("exito" => true));
+        } else {
+            echo json_encode(array("exito" => false, "error" => "No se pudo eliminar"));
+        }
+    }
     
+       
+            
+    //LISTAR IMAGENES LISTADO
+    public function listarImagenesAjax() {
+        $consulta = $this->controladorAdministrador->listarImagenesControlador();
+        $lista="";
+        if(count($consulta)> 0){
+            for ($index = 0; $index < count($consulta); $index++) {
+                $lista .= '<tr>
+                                <th scope="row">'.$consulta[$index]->getId().'</th>
+                                <td>'.$consulta[$index]->getNombre().'</td>
+                                <td style="display:block;margin:auto;"><button href="#VerInfoImagen" data-toggle="modal" type="button" id="'.$consulta[$index]->getId().'" title="Ver Imágen" class="btn btn-success verImagenListado"><ion-icon name="eye"></ion-icon></button>
+                                <button type="button" id="'.$consulta[$index]->getId().'" title="Eliminar" class="btn btn-danger eliminarImagenListado"><ion-icon name="trash"></ion-icon></button></td>
+                            </tr>';
+            }
+        }
+        echo $lista;
+    }  
+       
+            
+    //LISTAR IMAGENES CARRUSEL
+    public function listarImagenesInicioAjax() {
+        $consulta = $this->controladorAdministrador->listarImagenesControlador();
+        $lista='';
+        if(count($consulta)> 0){
+            for ($index = 0; $index < count($consulta); $index++) {
+                if($index>0){
+                    $lista .= '<div class="carousel-item">
+                              <img class="d-block w-100 imagenCarrusel" src="'.$consulta[$index]->getArchivo().'" alt="'.$consulta[$index]->getNombre().'">
+                            </div>';
+                }else{
+                    $lista .= '<div class="carousel-item active"><img class="d-block w-100 imagenCarrusel" src="'.$consulta[$index]->getArchivo().'" alt="'.$consulta[$index]->getNombre().'"></div>';
+                }
+            }
+        }
+        echo $lista;
+    }    
     
+    //MOSTRAR LA IMAGEN EN EL LISTADO
+    public function mostrarImagenListadoAjax($img) {
+        $respuesta = "";
+        try {
+            $consulta = $this->controladorAdministrador->mostrarImagenListadoControlador($img);
+            $respuesta = $consulta->getArchivo();
+            $exito = true;
+        } catch (Exception $exc) {
+            echo json_encode(array("exito" => false, "error" => $exc->getMessage()));
+        }
+        if ($exito) {
+            echo json_encode(array("respuesta" => $respuesta));
+        } else {
+            echo json_encode(array("exito" => false, "error" => "No se pudo mostrar la imagen del listado"));
+        }
+    }
     
     //REGISTRO DE UN USUARIO FUNCIONARIO
-    public function RegistroFuncionarioAjax($documento, $nombre, $telefono, $correo, $clave) {
+    public function RegistroFuncionarioAjax($documento, $nombre, $telefono, $correo, $dep, $clave) {
         $exito = false;
         try {
             $encriptar = $this->encriptar($clave);
             $consulta = $this->controlador->buscarPersonaControlador($documento);
             if (!$consulta) {
                 //registra en tabla persona
-                $personaDTO = new PersonaDTO($documento, $nombre, $telefono, $correo);
-                $registroPersona = $this->controlador->registroPersonaControlador($personaDTO);
+                $personaDTO = new PersonaDTO($documento, $nombre, $telefono, $correo, $encriptar);
+                $this->controlador->registroPersonaControlador($personaDTO);
                 //registra en tabla cliente
-                $registroFuncionario = $this->controladorAdministrador->registroFuncionarioControlador($documento, $encriptar);
+                $this->controladorAdministrador->registroFuncionarioControlador($documento,$dep);
+                $this->controladorUsuario->registroUsuarioControlador($documento);
+                $this->mail->enviarCorreoRegistro($nombre,$correo,$clave,$documento);
                 $exito = true;
             }
         } catch (Exception $exc) {
@@ -333,7 +460,6 @@ class Ajax {
         if(count($consulta)> 0){
             for ($index = 0; $index < count($consulta); $index++) {
                 $funcionarios .= '<tr>
-                                    <th scope="row">'.$consulta[$index]->getDocumento().'</th>
                                     <td>'.$consulta[$index]->getNombre().'</td>
                                     <td style="display:block;margin:auto;"><button href="#VerInfoFuncionario" data-toggle="modal" type="button" id="'.$consulta[$index]->getDocumento().'" title="Ver" class="btn btn-outline-success verFuncionario"><ion-icon name="eye"></ion-icon></button></td>
                                 </tr>';
@@ -342,19 +468,16 @@ class Ajax {
         echo $funcionarios;
     }
     
-    //LISTAR FUNCIONARIOS PARA EL REGISTRO UNA DEPENDENCIA
-    public function listarFuncionariosRegistroAjax() {
-        $consulta = $this->controladorAdministrador->listarFuncionariosRegistroControlador();
-        $funcionarios="";
+    //LISTAR DEPENDECIAS PARA EL REGISTRO UN FUNCIONARIO
+    public function listarDependenciasRegistroAjax() {
+        $consulta = $this->controladorAdministrador->listarDependenciasRegistroControlador();
+        $dep="<option>Seleccione Dependencia</option>";
         if(count($consulta)> 0){
             for ($index = 0; $index < count($consulta); $index++) {
-                $funcionarios .= '<option value="">Seleccione Funcionario</option>
-                                  <option value="'.$consulta[$index]->getDocumento().'">'.$consulta[$index]->getNombre().'</option>';
+                $dep .= '<option value="'.$consulta[$index]->getId().'">'.$consulta[$index]->getNombre().'</option>';
             }
-        }else{
-            $funcionarios = '<option value="">Seleccione Funcionario</option>';
         }
-        echo $funcionarios;
+        echo $dep;
     }
     
     //MOSTRAR LA INFORAMCION DEL FUNCIONARIO
@@ -379,7 +502,7 @@ class Ajax {
     public function modificarFuncionarioAjax($documento,$nombre,$telefono, $correo) {
         $exito = false;
         try {
-            $personaDTO = new PersonaDTO($documento,$nombre,$telefono, $correo);
+            $personaDTO = new PersonaDTO($documento,$nombre,$telefono, $correo, null);
             $consulta = $this->controlador->modificarPersonaControlador($personaDTO);
             if ($consulta) {
                 $exito = true;
@@ -398,10 +521,10 @@ class Ajax {
     
     
     //REGISTRO DE UNA DEPENDENCIAS
-    public function RegistroDependenciaAjax($nombre, $ubicacion, $telefono, $funcionario) {
+    public function RegistroDependenciaAjax($nombre, $ubicacion, $telefono) {
         $exito = false;
         try {
-            $depDTO = new DependenciaDTO(NULL, $nombre, $ubicacion, $telefono, $funcionario);
+            $depDTO = new DependenciaDTO(NULL, $nombre, $ubicacion, $telefono);
             $registroDep = $this->controladorAdministrador->registroDependenciaControlador($depDTO);
             $exito = $registroDep;
         } catch (Exception $exc) {
@@ -435,7 +558,7 @@ class Ajax {
         $respuesta = "";
         try {
             $consulta = $this->controladorAdministrador->mostrarInfoDependenciaControlador($idDep);
-            $respuesta = $consulta['nombre'].'ª'.$consulta['ubicacion'].'ª'.$consulta['telefono'].'ª'.$consulta['funcionario'];
+            $respuesta = $consulta['nombre'].'ª'.$consulta['ubicacion'].'ª'.$consulta['telefono'];
             $exito = true;
         } catch (Exception $exc) {
             echo json_encode(array("exito" => false, "error" => $exc->getMessage()));
@@ -513,11 +636,11 @@ class Ajax {
         if(count($consulta)> 0){
             for ($index = 0; $index < count($consulta); $index++) {
                 $dep .= '<tr>
-                                    <td>'.$consulta[$index]->getNombre().'</td>
-                                    <td>'.$consulta[$index]->getUbicacion().'</td>
-                                    <td>'.$consulta[$index]->getTelefono().'</td>
-                                    <td>'.$consulta[$index]->getFuncionario().'</td>
-                                    <td style="display:block;margin:auto;"><button href="#VerDepSolicitud" data-toggle="modal" type="button" id="'.$consulta[$index]->getId().'" title="Ver" class="btn btn-outline-success verDepSolicitud"><ion-icon name="eye"></ion-icon></button></td>
+                                    <td>'.$consulta[$index]['nombre'].'</td>
+                                    <td>'.$consulta[$index]['ubicacion'].'</td>
+                                    <td>'.$consulta[$index]['telefono'].'</td>
+                                    <td>'.$consulta[$index]['funcionario'].'</td>
+                                    <td style="display:block;margin:auto;"><button href="#VerDepSolicitud" data-toggle="modal" type="button" id="'.$consulta[$index]['id'].'" title="Ver" class="btn btn-outline-success verDepSolicitud"><ion-icon name="eye"></ion-icon></button></td>
                                 </tr>';
             }
         }
@@ -531,7 +654,7 @@ class Ajax {
         if(count($consulta)> 0){
             for ($index = 0; $index < count($consulta); $index++) {
                 $horarios .= '<div class="row">
-                                 <button '.$this->validarCantidadCitas($consulta[$index]->getFecha(),$consulta[$index]->getInicio()).' type="button" id="'.$consulta[$index]->getId().'-'.$consulta[$index]->getFuncionario().'">'.$consulta[$index]->getInicio().'-'.$consulta[$index]->getFin().'</button>
+                                 <button '.$this->validarCantidadCitas($consulta[$index]->getFecha(),$consulta[$index]->getInicio()).' type="button" id="'.$consulta[$index]->getId().'-'.$consulta[$index]->getFuncionario().'">'.$consulta[$index]->getFecha().' / '.$consulta[$index]->getInicio().'-'.$consulta[$index]->getFin().'</button>
                               </div>';
             }
         }else{
@@ -543,7 +666,7 @@ class Ajax {
     //VALIDAR CANTIDAD DE CITAS PARA UN HORARIO
     private function validarCantidadCitas($fecha, $inicio){
         $consulta = $this->controladorUsuario->validarCantidadCitasControlador($fecha, $inicio);
-        if($consulta['cantidad'] == 5){
+        if($consulta['cantidad'] == 6){
             return "disabled style='background-color:red;display:block;margin:auto;' title='No hay turnos disponibles' class='btn btn-success mb-3'";
         }else{
             return "style='display:block;margin:auto;' title='Solicitar Turno' class='btn btn-success mb-3 solicitarTurno'";
@@ -567,7 +690,10 @@ class Ajax {
              $citaDTO = new CitaDTO(null, ($turno), "PENDIENTE", $idHorario, $usuario, $fun);
              $ingreso = $this->controladorUsuario->ingresarCitaControlador($citaDTO);
              if($ingreso){
+                 $consultaCorreo = $this->controlador->buscarDatosControlador($usuario);
+                 $consultaCita = $this->controlador->buscarCitaControlador($citaDTO);
                  $respuesta = $turno;
+                 $this->mail->enviarCorreoTurno($consultaCita['turno'],$consultaCita['fecha'],$consultaCita['hora_inicio'],$consultaCita['dep'],$consultaCorreo['correo'],$consultaCorreo['nombre']);
              }
         }
         
@@ -584,6 +710,7 @@ class Ajax {
                                 <th scope="row">'.$consulta[$index]->getTurno().'</th>
                                 <td>'.$consulta[$index]->getHorario().'</td>
                                 <td>'.$consulta[$index]->getFuncionario().'</td>
+                                <td>'.$consulta[$index]->getUsuario().'</td>
                                 <td>'.$this->validarEstadoCita(1,$consulta[$index]->getEstado()).'</td>
                                 <td style="display:block;margin:auto;"><button type="button" id="'.$consulta[$index]->getId().'" title="Cancelar Cita" class="btn btn-outline-danger cancelarCita"><ion-icon name="trash"></ion-icon></button></td>
                             </tr>';
@@ -630,8 +757,8 @@ class Ajax {
     }
             
     //LISTAR CITAS POR ATENDER
-    public function listarCitasPorAtenderAjax($fecha, $fun) {
-        $consulta = $this->controladorUsuario->listarCitasPorAtenderControlador($fecha, $fun);
+    public function listarCitasPorAtenderAjax($fun, $horario) {
+        $consulta = $this->controladorUsuario->listarCitasPorAtenderControlador($fun, $horario);
         $lista="";
         if(count($consulta)> 0){
             for ($index = 0; $index < count($consulta); $index++) {
@@ -674,46 +801,56 @@ $ajax = new Ajax();
 
 //   SI ESTA VARIABLE ES DIFERENTE DE NULL SE DEBE INGRESAR EL USUARIO
 $loguear = isset($_POST["ingresarUsuario"], $_POST["ingresarContraseña"], $_POST["ingresarTipo"]);
+$recordarContrasena = isset($_POST["recordar_Documento"]);    
+$cambiarContrasena = isset($_POST["idUsuarioCambiarContrasena"],$_POST["nuevaContrasena"]); 
 $registroUsuario = isset($_POST["registroDocumento"], $_POST["registroNombre"], $_POST["registroTelefono"], $_POST["registroCorreo"], $_POST["registroClave"]);
-$registroFuncionario = isset($_POST["registroDocumentoFuncionario"], $_POST["registroNombreFuncionario"], $_POST["registroTelefonoFuncionario"], $_POST["registroCorreoFuncionario"], $_POST["registroClaveFuncionario"]);
+$registroFuncionario = isset($_POST["registroDocumentoFuncionario"], $_POST["registroNombreFuncionario"], $_POST["registroTelefonoFuncionario"], $_POST["registroCorreoFuncionario"], $_POST["registroDepFuncionario"], $_POST["registroClaveFuncionario"]);
 $registroNoticia = isset($_POST["registroTitulo"], $_POST["registroDesc"], $_POST["tipoRegistro"]);
-$registroDependencia = isset($_POST["registroNombreDep"], $_POST["registroUbicacionDep"], $_POST["registroTelefonoDep"], $_POST["ingresarFuncionarioDep"]);
+$registroDependencia = isset($_POST["registroNombreDep"], $_POST["registroUbicacionDep"], $_POST["registroTelefonoDep"]);
 $registroHorario = isset($_POST["idFuncionario"], $_POST["dateHorario"], $_POST["comboHoraInicio"], $_POST["comboHoraFin"]);
 $mostrarTotales = isset($_GET["mostrarTotales"]);
 $listarNoticias = isset($_GET["listarNoticias"]);
 $listarFuncionarios = isset($_GET["listarFuncionarios"]);
 $listarNoticiasAdmin = isset($_GET["listarNoticiasAdmin"]);
+$listarImagenesAdmin = isset($_GET["listarImagenes"]);
+$listarImagenesInicio = isset($_GET["listarImagenesInicio"]);
 $listarNoticiasFun = isset($_POST["idNoticiaFunListar"]);
 $listarHorario = isset($_POST["idFuncionarioHorario"]);
-$listarFuncionariosRegistro = isset($_GET["listarFuncionariosRegistro"]);
+$listarDependenciasRegistro = isset($_GET["listarDependenciasRegistro"]);
 $listarDependencias = isset($_GET["listarDependencias"]);
 $listarDependenciasSolicitud = isset($_GET["listarDependenciasSolicitud"]);
 $mostrarInfoNoticia = isset($_POST["idNoticia"]);
 $mostrarInfoFuncionario = isset($_POST["idFuncionario"]);
+$mostrarImagenListado = isset($_POST["idImagenBuscar"]);
 $mostrarInfoDependencia = isset($_POST["idDependencia"]);
 $mostrarPerfil = isset($_POST["personaPerfil"]);
 $mostrarHorariosDep = isset($_POST["dateSolicitud"],$_POST["idDepSolicitud"]);
 $eliminarNoticia = isset($_POST["idNoticiaEliminar"]);  
+$eliminarImagen = isset($_POST["idImagenEliminar"]);  
 $modificarNoticia = isset($_POST["idNoticiaModificar"],$_POST["tituloNoticiaModificar"],$_POST["descNoticiaModificar"]);    
 $modificarFuncionario = isset($_POST["idFuncionarioModificar"],$_POST["nombreFuncionarioModificar"],$_POST["telefonoFuncionarioModificar"],$_POST["correoFuncionarioModificar"]);    
 $modificarDependencia = isset($_POST["idDepModificar"],$_POST["nombreDepModificar"],$_POST["ubicacionDepModificar"],$_POST["telefonoDepModificar"]);    
 $solicitarTurno = isset($_POST["idSolicitudTurno"],$_POST["funcionarioSolicitudTurno"],$_POST["usuarioSolicitudTurno"]);    
 $listarCitasUsuario = isset($_POST["idListarCitas"]);    
 $cancelarCita = isset($_POST["idCancelarCita"]);      
-$listarCitasPorAtender = isset($_POST["dateListadoCitas"],$_POST["idFuncionarioCitas"]);    
+$listarCitasPorAtender = isset($_POST["idFuncionarioCitas"],$_POST["idHorarioCitas"]);    
 $cambiarEstadoCita = isset($_POST["idCambiarEstadoTurno"]);    
 
 
 if ($loguear) {
     $ajax->LoguearUsuarioAjax($_POST["ingresarUsuario"], $_POST["ingresarContraseña"], $_POST["ingresarTipo"]);
+} else if ($recordarContrasena) {
+    $ajax->RecordarContrasenaAjax($_POST["recordar_Documento"]);
+}  else if ($cambiarContrasena) {
+    $ajax->CambiarContrasenaAjax($_POST["idUsuarioCambiarContrasena"],$_POST["nuevaContrasena"]);
 } else if ($registroUsuario) {
     $ajax->RegistroUsuarioAjax($_POST["registroDocumento"], $_POST["registroNombre"], $_POST["registroTelefono"], $_POST["registroCorreo"], $_POST["registroClave"]);
 } else if ($registroFuncionario) {
-    $ajax->RegistroFuncionarioAjax($_POST["registroDocumentoFuncionario"], $_POST["registroNombreFuncionario"], $_POST["registroTelefonoFuncionario"], $_POST["registroCorreoFuncionario"], $_POST["registroClaveFuncionario"]);
+    $ajax->RegistroFuncionarioAjax($_POST["registroDocumentoFuncionario"], $_POST["registroNombreFuncionario"], $_POST["registroTelefonoFuncionario"], $_POST["registroCorreoFuncionario"], $_POST["registroDepFuncionario"], $_POST["registroClaveFuncionario"]);
 } else if ($registroNoticia) {
     $ajax->RegistroNoticiaAjax($_POST["registroTitulo"], $_POST["registroDesc"], $_POST["tipoRegistro"]);
 } else if ($registroDependencia) {
-    $ajax->RegistroDependenciaAjax($_POST["registroNombreDep"], $_POST["registroUbicacionDep"], $_POST["registroTelefonoDep"], $_POST["ingresarFuncionarioDep"]);
+    $ajax->RegistroDependenciaAjax($_POST["registroNombreDep"], $_POST["registroUbicacionDep"], $_POST["registroTelefonoDep"]);
 } else if ($registroHorario) {
     $ajax->RegistroHorarioAjax($_POST["idFuncionario"], $_POST["dateHorario"], $_POST["comboHoraInicio"], $_POST["comboHoraFin"]);
 } else if ($listarNoticias && $_GET["listarNoticias"]) {
@@ -726,16 +863,22 @@ if ($loguear) {
     $ajax->mostrarTotalesAjax();
 } else if ($listarNoticiasFun) {
     $ajax->listarNoticiasFunAjax($_POST['idNoticiaFunListar']);
-} else if ($listarFuncionariosRegistro && $_GET["listarFuncionariosRegistro"]) {
-    $ajax->listarFuncionariosRegistroAjax();
+} else if ($listarDependenciasRegistro && $_GET["listarDependenciasRegistro"]) {
+    $ajax->listarDependenciasRegistroAjax();
 }  else if ($listarDependencias && $_GET["listarDependencias"]) {
     $ajax->listarDependenciasAjax();
 }  else if ($listarDependenciasSolicitud && $_GET["listarDependenciasSolicitud"]) {
     $ajax->listarDependenciasSolicitudAjax();
+}  else if ($listarImagenesAdmin && $_GET["listarImagenes"]) {
+    $ajax->listarImagenesAjax();
+}  else if ($listarImagenesInicio && $_GET["listarImagenesInicio"]) {
+    $ajax->listarImagenesInicioAjax();
 } else if ($listarHorario) {
     $ajax->listarHorarioAjax($_POST['idFuncionarioHorario']);
 } else if ($mostrarInfoNoticia) {
     $ajax->mostrarInfoNoticiaAjax($_POST["idNoticia"]);
+} else if ($mostrarImagenListado) {
+    $ajax->mostrarImagenListadoAjax($_POST["idImagenBuscar"]);
 } else if ($mostrarInfoDependencia) {
     $ajax->mostrarInfoDependenciaAjax($_POST["idDependencia"]);
 } else if ($mostrarInfoFuncionario) {
@@ -746,6 +889,8 @@ if ($loguear) {
     $ajax->mostrarHorariosDepAjax($_POST["dateSolicitud"],$_POST["idDepSolicitud"]);
 } else if ($eliminarNoticia) {
     $ajax->eliminarNoticiaAjax($_POST["idNoticiaEliminar"]);
+} else if ($eliminarImagen) {
+    $ajax->eliminarImagenAjax($_POST["idImagenEliminar"]);
 } else if ($modificarNoticia) {
     $ajax->modificarNoticiaAjax($_POST["idNoticiaModificar"],$_POST["tituloNoticiaModificar"],$_POST["descNoticiaModificar"]);
 } else if ($modificarFuncionario) {
@@ -759,7 +904,7 @@ if ($loguear) {
 } else if ($cancelarCita) {
     $ajax->cancelarCitaAjax($_POST["idCancelarCita"]);
 } else if ($listarCitasPorAtender) {
-    $ajax->listarCitasPorAtenderAjax($_POST["dateListadoCitas"],$_POST["idFuncionarioCitas"]);
+    $ajax->listarCitasPorAtenderAjax($_POST["idFuncionarioCitas"],$_POST["idHorarioCitas"]);
 } else if ($cambiarEstadoCita) {
     $ajax->cambiarEstadoCitaAjax($_POST["idCambiarEstadoTurno"]);
 }

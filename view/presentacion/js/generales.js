@@ -15,3 +15,7 @@ function validaNumericos(event) {
     }
     return false;
 }
+
+if (!$('#vista_login').is(':visible')) {
+    document.body.style.background='white';
+}

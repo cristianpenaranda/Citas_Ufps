@@ -2,11 +2,13 @@
 if (isset($_SESSION["Tipo"])) {
     header("Location:inicio");
 }
+include_once '.\view\modulos\pestanas\registrarme.php';
+include_once '.\view\modulos\pestanas\recordarContrasena.php';
 ?>
 <div id="vista_login">
     <br>
     <div class="col-md-4" style="display: block;margin: auto;">
-        <form class="login" id="FormLogin" method="POST">
+        <form class="login" id="FormLogin" method="POST" autocomplete="off">
             <img src="./view/presentacion/img/citas_ufps.png">
             <p class="mt-3">Ingresa tus datos para iniciar sesión</p>
             <div class="col-auto">
@@ -22,7 +24,7 @@ if (isset($_SESSION["Tipo"])) {
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1"><ion-icon name="lock"></ion-icon></span>
                     </div>
-                    <input type="password" name="ingresarContraseña" maxlength="10" class="form-control" placeholder="Contraseña" id="ingresarContraseña" required>
+                    <input value="contraseña" type="password" name="ingresarContraseña" maxlength="20" class="form-control" placeholder="Contraseña" id="ingresarContraseña" required>
                 </div>
 
                 <div class="form-group">
@@ -43,59 +45,15 @@ if (isset($_SESSION["Tipo"])) {
                 </div>
 
                 <div class="form-group">
-                    <a class="mt-2" href="#formRegistrarme" data-toggle="modal" data-target=".bd-example-modal-sm" id="modal_registro"><ion-icon name="person-add"></ion-icon> Registrarme</a>
+                    <a class="mt-2" href="#formRegistrarme" data-toggle="modal" id="modal_registro"><ion-icon name="person-add"></ion-icon> Registrarme</a>
+                </div>
+                <div class="form-group">
+                    <a class="mt-2" href="#formRecordarContrasena" data-toggle="modal" id="modal_recordar"><ion-icon name="help"></ion-icon> Olvidé mi contraseña</a>
                 </div>
             </div>
             <br>
         </form>
 
-        <!--MODAL REGISTRARME-->
-        <form class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="formRegistrarme" method="POST">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalCenterTitle">Registrarme</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group input-group" style="color:black">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><ion-icon name="card"></ion-icon></span>
-                            </div>
-                            <input type="text" name="registroDocumento" class="form-control" placeholder="Documento de identidad" id="registroDocumento" required onkeypress='return validaNumericos(event)' maxlength="12">
-                        </div>
-                        <div class="form-group input-group" style="color:black">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><ion-icon name="person"></ion-icon></span>
-                            </div>
-                            <input type="text" name="registroNombre" class="form-control" placeholder="Nombre" id="registroNombre" required onblur="aMayusculas(this.value,this.id)" maxlength="50">
-                        </div>
-                        <div class="form-group input-group" style="color:black">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><ion-icon name="call"></ion-icon></span>
-                            </div>
-                            <input type="text" name="registroTelefono" class="form-control" placeholder="Teléfono" id="registroTelefono" required onkeypress='return validaNumericos(event)' maxlength="15">
-                        </div>
-                        <div class="form-group input-group" style="color:black">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><ion-icon name="mail"></ion-icon></span>
-                            </div>
-                            <input type="email" name="registroCorreo" class="form-control" placeholder="Correo Electrónico" id="registroCorreo" required maxlength="100">
-                        </div>
-                        <div class="form-group input-group" style="color:black">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><ion-icon name="lock"></ion-icon></span>
-                            </div>
-                            <input type="password" name="registroClave" class="form-control" placeholder="Contraseña" id="registroClave" required maxlength="10">
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn boton_principal" id="botonRegistroUsuario">Registrar <ion-icon name="person-add"></ion-icon></button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </form>
 
     </div>
     <br>

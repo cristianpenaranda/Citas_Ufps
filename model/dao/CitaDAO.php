@@ -67,12 +67,12 @@ class CitaDAO {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT c.id,c.turno,c.estado,h.hora_inicio inicio ,c.usuario,d.nombre dependencia FROM cita c INNER JOIN horario h ON h.id=c.horario INNER JOIN dependencia d ON c.funcionario=d.funcionario WHERE c.usuario=?");
+            $stm = $conexion->prepare("SELECT c.id,c.turno,c.estado,h.hora_inicio inicio,d.nombre dependencia,p.nombre funcionario FROM cita c INNER JOIN horario h ON h.id=c.horario INNER JOIN funcionario f ON h.funcionario=f.documento INNER JOIN persona p ON p.documento=f.documento INNER JOIN dependencia d ON d.id=f.dependencia WHERE c.usuario=?");
             $stm->bindParam(1, $idUsuario, PDO::PARAM_STR);
             $stm->execute();
             $pila = array();
             while ($consulta = $stm->fetch()) {
-                $citaDTO = new CitaDTO($consulta['id'], $consulta['turno'], $consulta['estado'], $consulta['inicio'], $consulta['usuario'], $consulta['dependencia']);
+                $citaDTO = new CitaDTO($consulta['id'], $consulta['turno'], $consulta['estado'], $consulta['inicio'], $consulta['funcionario'], $consulta['dependencia']);
                 array_push($pila, $citaDTO);
             }
         } catch (Exception $ex) {
@@ -82,12 +82,12 @@ class CitaDAO {
     }
     
     //LISTAR CITAS POR ATENDER
-    static function listarCitasPorAtenderDAO($fecha, $fun) {
+    static function listarCitasPorAtenderDAO($fun, $horario) {
         $conexion = Conexion::crearConexion();
         try {
             $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stm = $conexion->prepare("SELECT c.id,c.turno,h.hora_inicio,p.nombre,c.estado FROM cita c INNER JOIN horario h ON h.id=c.horario INNER JOIN persona p ON p.documento=c.usuario WHERE h.fecha=? AND c.funcionario=?");
-            $stm->bindParam(1, $fecha, PDO::PARAM_STR);
+            $stm = $conexion->prepare("SELECT c.id,c.turno,h.hora_inicio,p.nombre,c.estado FROM cita c INNER JOIN horario h ON h.id=c.horario INNER JOIN persona p ON p.documento=c.usuario WHERE h.id=? AND c.funcionario=?");
+            $stm->bindParam(1, $horario, PDO::PARAM_STR);
             $stm->bindParam(2, $fun, PDO::PARAM_STR);
             $stm->execute();
             $pila = array();
@@ -130,6 +130,30 @@ class CitaDAO {
             throw new Exception("Error al modificar el estado de la cita");
         }
         return $exito;
+    }
+
+    
+    
+    //BUSCAR INFORMACION DE LA CITA
+    static function buscarCitaDAO($citaDTO) {
+        $conexion = Conexion::crearConexion();
+        $turno = $citaDTO->getTurno();
+        $horario = $citaDTO->getHorario();
+        $usuario = $citaDTO->getUsuario();
+        $funcionario = $citaDTO->getFuncionario();
+        try {
+            $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stm = $conexion->prepare("SELECT c.turno,DATE_FORMAT(h.fecha, '%d-%b-%Y') fecha,h.hora_inicio,p.nombre,d.nombre dep FROM cita c INNER JOIN horario h ON h.id=c.horario AND h.id=? INNER JOIN persona p ON p.documento=c.usuario AND c.usuario=? INNER JOIN funcionario f ON f.documento=c.funcionario INNER JOIN dependencia d ON d.id=f.dependencia AND c.funcionario=? WHERE c.turno=?");
+            $stm->bindParam(1, $horario, PDO::PARAM_STR);
+            $stm->bindParam(2, $usuario, PDO::PARAM_STR);
+            $stm->bindParam(3, $funcionario, PDO::PARAM_STR);
+            $stm->bindParam(4, $turno, PDO::PARAM_STR);
+            $stm->execute();
+            $consulta = $stm->fetch();
+        } catch (Exception $ex) {
+            throw new Exception("Error al buscar la cita");
+        }
+        return $consulta;
     }
 
 }

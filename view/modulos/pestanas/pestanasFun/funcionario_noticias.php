@@ -17,7 +17,7 @@ if (isset($_SESSION["Tipo"])) {
             <h4>Nueva Noticia</h4>
             <hr>
                 <div style="background:white;border-radius:15px 15px 15px 15px;">
-                <form class="login" id="FormNoticiaFun" method="POST">
+                <form class="login" id="FormNoticiaFun" method="POST" autocomplete="off">
                     <div class="col-auto">
 
                         <div class="form-group input-group mt-3">

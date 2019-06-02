@@ -10,19 +10,13 @@ if (isset($_SESSION["Tipo"])) {
 ?>
 
 <div id="vista_Admin_Dependencias">
-    <div class="alert alert-primary alert-dismissible fade show mt-3" role="alert" style="width:90%;display:block;margin:auto;">
-        <strong>AVISO IMPORTATANTE!</strong> Para el registro de una dependencia debe registrar antes el funcionario encargado.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
     <h1>Administración de Dependencias</h1>
     <div class="row ml-0 mr-0">
         <div class="col-md-5 panel">
             <h4>Nueva Dependencia</h4>
             <hr>
             <div style="background:white;border-radius:15px 15px 15px 15px;">
-                <form class="login" id="FormDependencia" method="POST">
+                <form class="login" id="FormDependencia" method="POST" autocomplete="off">
                     <div class="col-auto">
 
                         <div class="form-group input-group mt-3">
@@ -46,16 +40,6 @@ if (isset($_SESSION["Tipo"])) {
                             <input type="text" name="registroTelefonoDep" class="form-control" onkeypress='return validaNumericos(event)' placeholder="Teléfono" maxlength="15" id="registroTelefonoDep" required>
                         </div>
 
-                        <div class="form-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1" for="ingresarFuncionarioDep"><ion-icon name="person"></ion-icon></span>       
-                                <select id="ingresarFuncionarioDep" name="ingresarFuncionarioDep" class="form-control" required> 
-
-                                </select>
-                                <label class="bg-danger" id="error-tipoUsuarioI"></label>     
-                            </div>
-                        </div>
-
                         <div class="input-group mb-3">
                             <button id="botonRegistroDependencia" type="submit" class="btn boton_principal mt-3"><ion-icon name="done-all"></ion-icon> Registrar</button>
                         </div>
@@ -65,8 +49,8 @@ if (isset($_SESSION["Tipo"])) {
         </div>
         <div class="col-md-5 panel" id="mensajeDep">
             <h4>Listado de Dependencias</h4>
-            <hr>
-            <table class="tabla table table-sm">
+            <hr> 
+            <table class="tabla table table-responsive-md" id="tablaTotalDependencias">
                 <thead>
                     <tr>
                         <th scope="col" style="width: 5%;">#</th>
@@ -87,7 +71,7 @@ if (isset($_SESSION["Tipo"])) {
 <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="VerInfoDependencia">
     <div class="modal-dialog">
         <div class="modal-content" style="padding: 5%;">
-            <form id="FormInfoCliente" method="POST">
+            <form id="FormInfoCliente" method="POST" autocomplete="off">
                 <h4 style="text-align: center;">Información</h4>
                 <hr>
                 <div class="form-group input-group mt-3">
@@ -109,13 +93,6 @@ if (isset($_SESSION["Tipo"])) {
                         <span class="input-group-text" id="basic-addon1"><ion-icon name="call"></ion-icon></span>
                     </div>
                     <input type="text" name="ModalTelefonoDep" class="form-control" onkeypress='return validaNumericos(event)' placeholder="Teléfono" maxlength="15" id="ModalTelefonoDep" required>
-                </div>
-                
-                <div class="form-group input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1"><ion-icon name="person"></ion-icon></span>
-                    </div>
-                    <input type="text" name="ModalFuncionarioDep" class="form-control" placeholder="Funcionario" maxlength="45" id="ModalFuncionarioDep" required disabled>
                 </div>
                 
                 <div class="row">

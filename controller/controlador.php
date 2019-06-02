@@ -30,6 +30,16 @@ class controlador{
     //busca persona
     public function buscarPersonaControlador($usuario){
         return $this->negocio->buscarPersonaNegocio($usuario);
+    }    
+    
+    //cambiar contraseña
+    public function cambiarContrasenaControlador($usuario,$clave){
+        return $this->negocio->cambiarContrasenaNegocio($usuario,$clave);
+    }   
+    
+    //recordar contraseña
+    public function recordarContrasenaControlador($usuario){
+        return $this->negocio->recordarContrasenaNegocio($usuario);
     }
     
     //registra la persona 
@@ -45,6 +55,11 @@ class controlador{
     //MODIFICAR PERSONA
     public function modificarPersonaControlador($personaDTO){
         return $this->negocio->modificarPersonaNegocio($personaDTO);
+    }
+    
+    //BUSCAR INFORMACIÓN DE CITA
+    public function buscarCitaControlador($citaDTO){
+        return $this->negocio->buscarCitaNegocio($citaDTO);
     }
 
 
